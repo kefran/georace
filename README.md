@@ -1,9 +1,17 @@
 georace
 =======
 
-1. Introduction
----------------------
-  Georace est une application convivial de course de vitesse. 
-C'est une course géo-localisé s'appuyant sur des utilisateurs connectés pour en suivre le cours en temps réel.
-La courses est matérialisée par une série de checkpoints virtuels représenté par des coordonnée géo-graphique précise.
-L'application fournit une carte sur laquelle figure les zones ou se trouve les checkpoints
+1. La course
+------------
+
+Georace est plus qu'une simple course géo-localisé !
+Seul ou à plusieurs participé à cette course trépidente. 
+Les checkpoints ne sont pas clairement identifiés, seul une zone est représentée sur la carte, mais cette zone est accompagnée d'une photographie de l'endroit exact du checkpoint. 
+Cette course mettra à rude épreuve votre sens de l'orientation. 
+La difficulté varie avec la taille des zones.
+
+
+2.Mode d'emploi
+----------------
+
+Pose ton doigt sur l'appli et suis le guide !
