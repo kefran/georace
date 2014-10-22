@@ -1,4 +1,4 @@
-package com.utbm.georace.model;
+package com.utbm.georace.tools;
 
 import org.json.JSONObject;
 

@@ -286,7 +286,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 //Client Http
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 //Requete methode POST
-            HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.html");
+            HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.php");
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 param.add(new BasicNameValuePair("userName","hans"));
                 param.add(new BasicNameValuePair("userPassword","hans"));
@@ -295,7 +295,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     HttpResponse response = httpClient.execute(httpPost);
                     //Lecture du resultat
                     HttpEntity httpEntity = response.getEntity();
+                    //recuperation du status de la reponse
                     StatusLine statusLine = response.getStatusLine();
+                    Log.d("STATUS LINE",Integer.toString( statusLine.getStatusCode()));
 
                     if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();

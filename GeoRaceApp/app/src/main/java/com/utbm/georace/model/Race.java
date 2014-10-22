@@ -1,0 +1,102 @@
+package com.utbm.georace.model;
+
+import com.utbm.georace.tools.ISerializable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.Date;
+
+/**
+ * Created by jojo on 22/10/2014.
+ */
+public class Race implements ISerializable{
+    //La valeur des TAG doit être indentique au colonne de la bdd
+    final static public String TAG_RACE_ID="id";
+    final static public String TAG_RACE_START="date_start";
+    final static public String TAG_RACE_END="date_end";
+    final static public String TAG_RACE_TRACK="track";
+    final static public String TAG_RACE_ORGANIZER="organizer";
+
+    private int id;
+    private Date date_start;
+    private Date date_end;
+    private Track track;
+    private User organizer;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Timestamp getDate_start() {
+        return date_start;
+    }
+
+    public void setDate_start(Timestamp date_start) {
+        this.date_start = date_start;
+    }
+
+    public Date getDate_end() {
+        return date_end;
+    }
+
+    public void setDate_end(Date date_end) {
+        this.date_end = date_end;
+    }
+
+    public Track getTrack() {
+        return track;
+    }
+
+    public void setTrack(Track track) {
+        this.track = track;
+    }
+
+    public User getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(User organizer) {
+        this.organizer = organizer;
+    }
+
+    @Override
+    public Race fromJson(JSONObject jsonObject) {
+        Race race = new Race();
+        try {
+            race.setId(jsonObject.getInt(TAG_RACE_ID));
+            race.setDate_start(new Timestamp().;jsonObject.getString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public String toJson() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+
+
+            jsonObject.put(TAG_RACE_ID,id);
+            jsonObject.put(TAG_RACE_START,date_start.getTime());
+            jsonObject.put(TAG_RACE_END,date_end.toString());
+            jsonObject.put(TAG_RACE_TRACK,track.toJson());
+            jsonObject.put(TAG_RACE_ORGANIZER,organizer.toJson());
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject.toString();
+    }
+}

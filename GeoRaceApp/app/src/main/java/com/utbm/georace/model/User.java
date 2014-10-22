@@ -1,8 +1,7 @@
 package com.utbm.georace.model;
 
-import android.location.Location;
-
 import com.google.android.gms.maps.model.LatLng;
+import com.utbm.georace.tools.ISerializable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,14 +11,15 @@ import org.json.JSONObject;
  */
 public class User implements ISerializable {
 
-    final static String TAG_ID = "id";
-    final static String TAG_LOGIN = "login";
-    final static String TAG_PASSWORD = "password";
-    final static String TAG_FIRSTNAME = "firstname";
-    final static String TAG_LASTNAME = "lastname";
-    final static String TAG_EMAIL = "email";
-    final static String TAG_LATITUDE = "latitude";
-    final static String TAG_LONGITUDE = "longitude";
+    //La valeur des TAG doit être indentique au colonne de la bdd
+    final static String TAG_USER_ID = "id";
+    final static String TAG_USER_LOGIN = "login";
+    final static String TAG_USER_PASSWORD = "password";
+    final static String TAG_USER_FIRSTNAME = "firstname";
+    final static String TAG_USER_LASTNAME = "lastname";
+    final static String TAG_USER_EMAIL = "email";
+    final static String TAG_USER_LATITUDE = "latitude";
+    final static String TAG_USER_LONGITUDE = "longitude";
 
 
     private int id;
@@ -94,14 +94,14 @@ public class User implements ISerializable {
         JSONObject jsonObject = new JSONObject();
         try {
 
-            jsonObject.put(TAG_ID, id);
-            jsonObject.put(TAG_LOGIN, loginName);
-            jsonObject.put(TAG_FIRSTNAME, firstName);
-            jsonObject.put(TAG_LASTNAME, lastName);
-            jsonObject.put(TAG_PASSWORD, password);
-            jsonObject.put(TAG_EMAIL, email);
-            jsonObject.put(TAG_LATITUDE, latitude);
-            jsonObject.put(TAG_LONGITUDE, longitude);
+            jsonObject.put(TAG_USER_ID, id);
+            jsonObject.put(TAG_USER_LOGIN, loginName);
+            jsonObject.put(TAG_USER_FIRSTNAME, firstName);
+            jsonObject.put(TAG_USER_LASTNAME, lastName);
+            jsonObject.put(TAG_USER_PASSWORD, password);
+            jsonObject.put(TAG_USER_EMAIL, email);
+            jsonObject.put(TAG_USER_LATITUDE, latitude);
+            jsonObject.put(TAG_USER_LONGITUDE, longitude);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -114,13 +114,13 @@ public class User implements ISerializable {
 
         User user = new User();
         try {
-            user.setId(jsonObject.getInt(TAG_ID));
-            user.setLoginName(jsonObject.getString(TAG_LOGIN));
-            user.setFirstName(jsonObject.getString(TAG_FIRSTNAME));
-            user.setPassword(jsonObject.getString(TAG_PASSWORD));
-            user.setLastName(jsonObject.getString(TAG_LASTNAME));
-            user.setPosition(jsonObject.getDouble(TAG_LATITUDE), jsonObject.getDouble(TAG_LONGITUDE));
-            user.setEmail(jsonObject.getString(TAG_EMAIL));
+            user.setId(jsonObject.getInt(TAG_USER_ID));
+            user.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
+            user.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
+            user.setPassword(jsonObject.getString(TAG_USER_PASSWORD));
+            user.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
+            user.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
+            user.setEmail(jsonObject.getString(TAG_USER_EMAIL));
 
         } catch (JSONException e) {
             e.printStackTrace();
