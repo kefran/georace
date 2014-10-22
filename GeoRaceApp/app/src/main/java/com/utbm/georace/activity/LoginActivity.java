@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +29,21 @@ import android.widget.TextView;
 
 import com.utbm.georace.R;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -264,12 +280,37 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                //Client Http
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                //Requete methode POST
+                HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/index.html");
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+                param.add(new BasicNameValuePair("userName","hans"));
+                param.add(new BasicNameValuePair("userPassword","hans"));
+                try {
+                    //execution et recuperation du resultat de la requete
+                    HttpResponse response = httpClient.execute(httpPost);
+                    //Lecture du resultat
+                    HttpEntity httpEntity = response.getEntity();
+                    StatusLine statusLine = response.getStatusLine();
+
+                    if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        httpEntity.writeTo(out);
+                        out.close();
+                        Log.d("RESULTAT REQUETE ", out.toString());
+                    }else
+                    {
+                        Log.e("Requete login ","Echec lors de la tentative de contact du serveur");
+                    }
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                }
+
+
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
