@@ -9,6 +9,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 
@@ -28,6 +29,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.utbm.georace.R;
+import com.utbm.georace.model.User;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -41,6 +43,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -77,7 +80,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.login);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -283,7 +286,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 //Client Http
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 //Requete methode POST
-                HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/index.html");
+            HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.html");
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 param.add(new BasicNameValuePair("userName","hans"));
                 param.add(new BasicNameValuePair("userPassword","hans"));
@@ -298,10 +301,17 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         httpEntity.writeTo(out);
                         out.close();
+                        JSONObject jsonObject = new JSONObject(out.toString());
+                        User user = new User().fromJson(jsonObject);
+
                         Log.d("RESULTAT REQUETE ", out.toString());
+                        Log.d("RESULTAT JSON", jsonObject.toString());
+                        Log.d("USERNAME", user.getLoginName());
+
                     }else
                     {
                         Log.e("Requete login ","Echec lors de la tentative de contact du serveur");
+
                     }
 
 

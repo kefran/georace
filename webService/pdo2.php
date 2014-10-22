@@ -18,11 +18,12 @@
               return self::$instance;
           } catch (Exception $e)
           {
-              $fp = fopen('pdoError.txt', 'a');
-              $errorString = "[" . date("Y-m-d H:i:s") . "] [" . $_SERVER['REMOTE_ADDR'] . "] [" . gethostbyaddr($_SERVER['REMOTE_ADDR']) . "] [" . $_SERVER['PHP_SELF'] . " ] " . $e->getMessage() . "\n";
+/*              $fp = fopen('pdoError.txt', 'a');
+  //            $errorString = "[" . date("Y-m-d H:i:s") . "] [" . $_SERVER['REMOTE_ADDR'] . "] [" . gethostbyaddr($_SERVER['REMOTE_ADDR']) . "] [" . $_SERVER['PHP_SELF'] . " ] " . $e->getMessage() . "\n";
               fwrite($fp, $errorString);
               fclose($fp);
-              die('MySQL Error, please contact us');
+              die('MySQL Error, please contact us');*/
+              echo "COnnection failed : ".$e->getMessage();
           }
       }
   }

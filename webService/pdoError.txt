@@ -1,1 +1,2 @@
 [2014-10-22 09:04:20] [::1] [lappe-tauppe] [/georace/get_login.php ] SQLSTATE[HY000] [1045] Access denied for user 'georace'@'localhost' (using password: YES)
+[2014-10-22 09:25:50] [::1] [localhost] [/georace/get_login.php ] SQLSTATE[HY000] [2002] No such file or directory

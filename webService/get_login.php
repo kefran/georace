@@ -7,11 +7,12 @@ header('content-type: application/json; charset=utf-8');
 require_once('conf.php');
 require_once('pdo2.php');
 
-/*$_POST['userLogin'] = "hans";
-$_POST['userPassword'] = "hans";*/
+$_POST['userLogin'] = "hans";
+$_POST['userPassword'] = "hans";
 
 if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_POST['userPassword'])) && (!empty($_POST['userPassword'])))
 {
+	$pdo =null;
 	try {
 		$pdo = PDO2::getInstance();
 		$selectUser = $pdo->prepare("SELECT u.id
