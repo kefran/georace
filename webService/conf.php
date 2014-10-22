@@ -1,5 +1,5 @@
 <?php
-define('SQL_DSN', 'odbc:lionne');
-define('SQL_USERNAME', 'insert_user');
-define('SQL_PASSWORD', 'sativa');
+define('SQL_DSN', 'mysql:dbname=georace;host=localhost');
+define('SQL_USERNAME', 'root');
+define('SQL_PASSWORD', '');
 ?>
