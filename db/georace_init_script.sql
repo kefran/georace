@@ -11,11 +11,13 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Export de la structure de la base pour georace
+DROP DATABASE IF EXISTS `georace`;
 CREATE DATABASE IF NOT EXISTS `georace` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `georace`;
 
 
 -- Export de la structure de table georace. check
+DROP TABLE IF EXISTS `check`;
 CREATE TABLE IF NOT EXISTS `check` (
   `user` int(11) unsigned NOT NULL,
   `race` int(11) unsigned NOT NULL,
@@ -36,6 +38,7 @@ DELETE FROM `check`;
 
 
 -- Export de la structure de table georace. checkpoint
+DROP TABLE IF EXISTS `checkpoint`;
 CREATE TABLE IF NOT EXISTS `checkpoint` (
   `id` int(11) unsigned NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -57,6 +60,7 @@ DELETE FROM `checkpoint`;
 
 
 -- Export de la structure de table georace. friendship
+DROP TABLE IF EXISTS `friendship`;
 CREATE TABLE IF NOT EXISTS `friendship` (
   `user` int(11) unsigned NOT NULL,
   `friend` int(11) unsigned NOT NULL,
@@ -74,6 +78,7 @@ DELETE FROM `friendship`;
 
 
 -- Export de la structure de table georace. invitation
+DROP TABLE IF EXISTS `invitation`;
 CREATE TABLE IF NOT EXISTS `invitation` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user` int(11) unsigned NOT NULL,
@@ -96,6 +101,7 @@ DELETE FROM `invitation`;
 
 
 -- Export de la structure de table georace. participation
+DROP TABLE IF EXISTS `participation`;
 CREATE TABLE IF NOT EXISTS `participation` (
   `user` int(11) unsigned NOT NULL,
   `race` int(11) unsigned NOT NULL,
@@ -115,6 +121,7 @@ DELETE FROM `participation`;
 
 
 -- Export de la structure de table georace. photo
+DROP TABLE IF EXISTS `photo`;
 CREATE TABLE IF NOT EXISTS `photo` (
   `id` int(11) unsigned NOT NULL,
   `name` int(11) NOT NULL,
@@ -133,6 +140,7 @@ DELETE FROM `photo`;
 
 
 -- Export de la structure de table georace. race
+DROP TABLE IF EXISTS `race`;
 CREATE TABLE IF NOT EXISTS `race` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `date_start` datetime DEFAULT NULL,
@@ -153,6 +161,7 @@ DELETE FROM `race`;
 
 
 -- Export de la structure de table georace. team
+DROP TABLE IF EXISTS `team`;
 CREATE TABLE IF NOT EXISTS `team` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
@@ -166,6 +175,7 @@ DELETE FROM `team`;
 
 
 -- Export de la structure de table georace. track
+DROP TABLE IF EXISTS `track`;
 CREATE TABLE IF NOT EXISTS `track` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
@@ -179,6 +189,7 @@ DELETE FROM `track`;
 
 
 -- Export de la structure de table georace. track_checkpoint
+DROP TABLE IF EXISTS `track_checkpoint`;
 CREATE TABLE IF NOT EXISTS `track_checkpoint` (
   `track` int(11) unsigned NOT NULL,
   `checkpoint` int(11) NOT NULL,
@@ -192,6 +203,7 @@ DELETE FROM `track_checkpoint`;
 
 
 -- Export de la structure de table georace. user
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
@@ -203,15 +215,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   `longitude` float NOT NULL DEFAULT '6.84419',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Export de données de la table georace.user: ~0 rows (environ)
+-- Export de données de la table georace.user: ~1 rows (environ)
 DELETE FROM `user`;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` (`id`, `login`, `password`, `firstname`, `lastname`, `email`, `latitude`, `longitude`) VALUES
+	(1, 'hans', '8800578b51f022c8d8adb9606a8b3db4fedbdac6', 'Han', 'Solo', 'han.solo@starwars.com', 47.6424, 6.84419);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 
 -- Export de la structure de table georace. user_team
+DROP TABLE IF EXISTS `user_team`;
 CREATE TABLE IF NOT EXISTS `user_team` (
   `user` int(11) unsigned NOT NULL,
   `team` int(11) unsigned NOT NULL,
