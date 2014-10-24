@@ -31,6 +31,41 @@ public class User implements ISerializable {
     private double latitude;
     private double longitude;
 
+    public User() {
+    }
+
+    ;
+
+    public User(int id, String loginName, String password, String firstName, String lastName, String email, double latitude, double longitude) {
+        this.id = id;
+        this.loginName = loginName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public User(JSONObject jsonObject) {
+
+        try {
+            this.setId(jsonObject.getInt(TAG_USER_ID));
+            this.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
+            this.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
+            this.setPassword(jsonObject.getString(TAG_USER_PASSWORD));
+            this.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
+            this.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
+            this.setEmail(jsonObject.getString(TAG_USER_EMAIL));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    ;
+
     public int getId() {
         return id;
     }

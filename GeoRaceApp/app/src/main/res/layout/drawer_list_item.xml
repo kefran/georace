@@ -2,11 +2,11 @@
     android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:background="#FFF"
+    android:focusable="false"
     android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:textColor="#111"
-    android:background="?A CHANGEEEEER"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:focusable="false" />
+    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:textColor="#111" />

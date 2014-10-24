@@ -7,11 +7,18 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * Created by jojo on 22/10/2014.
+ *
+ *
  */
+
+
 public class Race implements ISerializable{
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static public String TAG_RACE_ID="id";
@@ -26,6 +33,22 @@ public class Race implements ISerializable{
     private Track track;
     private User organizer;
 
+    public Race() {
+    }
+
+    ;
+
+    public Race(int id, Date date_start, Date date_end, Track track, User organizer) {
+        this.id = id;
+        this.date_start = date_start;
+        this.date_end = date_end;
+        this.track = track;
+        this.organizer = organizer;
+    }
+
+    public Race(JSONObject json) {
+
+    }
 
     public int getId() {
         return id;
@@ -35,7 +58,7 @@ public class Race implements ISerializable{
         this.id = id;
     }
 
-    public Timestamp getDate_start() {
+    public Date getDate_start() {
         return date_start;
     }
 
@@ -71,25 +94,29 @@ public class Race implements ISerializable{
     public Race fromJson(JSONObject jsonObject) {
         Race race = new Race();
         try {
+
             race.setId(jsonObject.getInt(TAG_RACE_ID));
-            race.setDate_start(new Timestamp().;jsonObject.getString());
+            race.setOrganizer(new User(jsonObject.getJSONObject(TAG_RACE_ORGANIZER)));
+
+            race.setTrack(new Track(jsonObject.getJSONObject(TAG_RACE_TRACK)));
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        return race;
     }
 
     @Override
     public String toJson() {
+
         JSONObject jsonObject = new JSONObject();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY kk:mm:ss");
+
         try {
-
-
             jsonObject.put(TAG_RACE_ID,id);
-            jsonObject.put(TAG_RACE_START,date_start.getTime());
-            jsonObject.put(TAG_RACE_END,date_end.toString());
-            jsonObject.put(TAG_RACE_TRACK,track.toJson());
+            jsonObject.put(TAG_RACE_START, sdf.format(date_start));
+            jsonObject.put(TAG_RACE_END, sdf.format(date_end));
+            jsonObject.put(TAG_RACE_TRACK, track.toJson());
             jsonObject.put(TAG_RACE_ORGANIZER,organizer.toJson());
 
 
