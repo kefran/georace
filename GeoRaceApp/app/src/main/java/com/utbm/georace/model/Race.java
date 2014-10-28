@@ -110,7 +110,7 @@ public class Race implements ISerializable{
     public String toJson() {
 
         JSONObject jsonObject = new JSONObject();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY kk:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
 
         try {
             jsonObject.put(TAG_RACE_ID,id);

@@ -16,16 +16,23 @@ public class Track implements ISerializable{
     private int id;
     private String name;
 
+    public Track(){};
+    public Track(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Track(JSONObject json) {
         try {
 
-            this.name(jsonObject.getString(TAG_TRACK_NAME));
-            this.id(jsonObject.getInt(TAG_TRACK_ID));
+            name=json.getString(TAG_TRACK_NAME);
+            id=json.getInt(TAG_TRACK_ID);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
 
     public int getId() {
         return id;

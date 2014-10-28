@@ -29,6 +29,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.utbm.georace.R;
+import com.utbm.georace.model.Race;
+import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
 
 import org.apache.http.HttpEntity;
@@ -47,6 +49,8 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -283,10 +287,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-                //Client Http
+
+            check();
+    /*
+            //Client Http
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 //Requete methode POST
-            HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.php");
+                HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.php");
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 param.add(new BasicNameValuePair("userName","hans"));
                 param.add(new BasicNameValuePair("userPassword","hans"));
@@ -300,6 +307,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     Log.d("STATUS LINE",Integer.toString( statusLine.getStatusCode()));
 
                     if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
+
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         httpEntity.writeTo(out);
                         out.close();
@@ -331,7 +339,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     return pieces[1].equals(mPassword);
                 }
             }
-
+*/
             // TODO: register the new account here.
             return true;
         }
@@ -357,6 +365,26 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    public void check(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
+
+      User user = new User(1,"jojo","jojo","johanny","strugala","jojo@patate.fr",30,30);
+      Track track = new Track(1,"piste numbeur ouane");
+        try {
+
+            Race race = new Race(1,sdf.parse("01/01/2011 10:30:30"),sdf.parse("01/01/2012 10:30:30"),track,user);
+            Log.d("JSON out",race.toJson());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
+
     }
 }
 

@@ -6,7 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.utbm.georace.R;
 
-public class Register extends Activity {
+public class RegisterActivity
+        extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
