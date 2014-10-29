@@ -9,7 +9,9 @@ import org.json.JSONObject;
 /**
  * Created by jojo on 22/10/2014.
  */
-public class User implements ISerializable {
+public class User implements ISerializable
+                            ,Comparable<User>
+{
 
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static String TAG_USER_ID = "id";
@@ -152,7 +154,7 @@ public class User implements ISerializable {
             user.setId(jsonObject.getInt(TAG_USER_ID));
             user.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
             user.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
-            user.setPassword(jsonObject.getString(TAG_USER_PASSWORD));
+            //user.setPassword(jsonObject.getString(TAG_USER_PASSWORD)); password is send , not received
             user.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
             user.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
             user.setEmail(jsonObject.getString(TAG_USER_EMAIL));
@@ -163,5 +165,20 @@ public class User implements ISerializable {
 
 
         return user;
+    }
+
+    @Override
+    public int compareTo(User user) {
+
+        if(user==null)throw new NullPointerException();
+
+        if(id==user.getId())
+            return 0;
+
+        if(id>user.getId())
+            return -1;
+
+            return 1;
+
     }
 }

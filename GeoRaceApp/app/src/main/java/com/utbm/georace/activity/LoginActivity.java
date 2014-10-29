@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.utbm.georace.R;
 import com.utbm.georace.model.Race;
+import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
 
@@ -65,7 +66,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+            "geo@:georace", "bar@example.com:world"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -293,7 +294,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //Client Http
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 //Requete methode POST
-                HttpPost httpPost = new HttpPost("http://jojo.local/georace/get_login.php");
+                HttpPost httpPost = new HttpPost("http://192.168.0.11/georace/get_login.php");
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 param.add(new BasicNameValuePair("userName","hans"));
                 param.add(new BasicNameValuePair("userPassword","hans"));
@@ -372,6 +373,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
 
       User user = new User(1,"jojo","jojo","johanny","strugala","jojo@patate.fr",30,30);
+
+
       Track track = new Track(1,"piste numbeur ouane");
         try {
 
@@ -381,6 +384,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             Race race1 = new Race(race.toJson());
             Log.d("JSON out 2",race1.toJson().toString());
+
+            Team team = new Team();
+
+            team.setId(1);
+            team.setName("Team rocket");
+
+            for(int i=0;i<10;i++)
+            team.addMember(new User(i,"jojo","jojo","johanny","strugala","jojo@patate.fr",30,30));
+
+            Log.d("Team json",team.toJson().toString());
+            Team team1 = new Team(team.toJson());
+            Log.d("Team1 json",team1.toJson().toString());
 
 
 

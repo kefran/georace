@@ -25,22 +25,32 @@ public class Team implements ISerializable {
     private String name;
     private TreeSet<User> members;
 
+    public Team(){
+        members = new TreeSet<User>();
+    };
+
     public Team(JSONObject obj) {
 
+        members = new TreeSet<User>();
         JSONArray jsArray;
         User buf;
 
         try {
-            this.setId(jsonObject.getInt(TAG_TEAM_ID));
-            this.setName(jsonObject.getString(TAG_TEAM_NAME));
-            jsArray = jsonObject.getJSONArray(TAG_TEAM_MEMBER);
+
+            this.setId(obj.getInt(TAG_TEAM_ID));
+            this.setName(obj.getString(TAG_TEAM_NAME));
+
+            jsArray = obj.getJSONArray(TAG_TEAM_MEMBER);
+
             int nbMember = jsArray.length();
-            int i = 0, it = 0;
+
+            int i = nbMember - 1, it = 0;
 
             if (nbMember != 0) {
                 while (i != it) {
-                    buf = new User(jsArray.getJSONObject(i));
+                    buf = new User(jsArray.getJSONObject(it));
                     this.addMember(buf);
+                    it+=1;
                 }
             }
 
@@ -50,7 +60,7 @@ public class Team implements ISerializable {
 
     }
 
-}
+
 
 
     public boolean addMember(User u) {
@@ -96,7 +106,7 @@ public class Team implements ISerializable {
         while (it.hasNext()) {
 
             buf = it.next();
-            jsArray.put(buf);
+            jsArray.put(buf.toJson());
 
         }
 
@@ -125,8 +135,8 @@ public class Team implements ISerializable {
             team.setId(jsonObject.getInt(TAG_TEAM_ID));
             team.setName(jsonObject.getString(TAG_TEAM_NAME));
             jsArray = jsonObject.getJSONArray(TAG_TEAM_MEMBER);
-            int nbMember = jsArray.length();
-            int i = 0, it = 0;
+            int nbMember = (jsArray==null)?jsArray.length():0;
+            int i = nbMember-1, it = 0;
 
             if (nbMember != 0) {
                 while (i != it) {

@@ -12,9 +12,14 @@ public class Track implements ISerializable{
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static public String TAG_TRACK_ID="id";
     final static public String TAG_TRACK_NAME="name";
+    final static public String TAG_TRACK_CHECKPOINT="checkpoint";
+
+
 
     private int id;
     private String name;
+
+
 
     public Track(){};
     public Track(int id, String name) {
