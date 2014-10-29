@@ -125,7 +125,7 @@ public class User implements ISerializable {
 
 
     @Override
-    public String toJson() {
+    public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
         try {
 
@@ -141,7 +141,7 @@ public class User implements ISerializable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return jsonObject.toString();
+        return jsonObject;
     }
 
 

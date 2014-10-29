@@ -52,7 +52,7 @@ public class Track implements ISerializable{
 
 
     @Override
-    public String toJson() {
+    public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -62,7 +62,7 @@ public class Track implements ISerializable{
             e.printStackTrace();
         }
 
-        return null;
+        return jsonObject;
     }
 
     @Override

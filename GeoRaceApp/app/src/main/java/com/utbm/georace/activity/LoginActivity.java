@@ -289,11 +289,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             check();
-    /*
+
             //Client Http
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 //Requete methode POST
-                HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.php");
+                HttpPost httpPost = new HttpPost("http://jojo.local/georace/get_login.php");
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 param.add(new BasicNameValuePair("userName","hans"));
                 param.add(new BasicNameValuePair("userPassword","hans"));
@@ -339,7 +339,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     return pieces[1].equals(mPassword);
                 }
             }
-*/
+
             // TODO: register the new account here.
             return true;
         }
@@ -376,7 +376,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         try {
 
             Race race = new Race(1,sdf.parse("01/01/2011 10:30:30"),sdf.parse("01/01/2012 10:30:30"),track,user);
-            Log.d("JSON out",race.toJson());
+            Log.d("JSON out",race.toJson().toString());
+
+
+            Race race1 = new Race(race.toJson());
+            Log.d("JSON out 2",race1.toJson().toString());
+
+
 
         } catch (ParseException e) {
             e.printStackTrace();

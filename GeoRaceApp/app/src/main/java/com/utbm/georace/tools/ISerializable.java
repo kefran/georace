@@ -7,7 +7,6 @@ import org.json.JSONObject;
  */
 public interface ISerializable<T> {
 
-    public String toJson();
-
-    public T fromJson(JSONObject jsonObject);
+    public JSONObject toJson();
+    public  T fromJson(JSONObject jsonObject);
 }
