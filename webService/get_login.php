@@ -7,8 +7,10 @@ header('content-type: application/json; charset=utf-8');
 require_once('conf.php');
 require_once('pdo2.php');
 
-$_POST['userLogin'] = "hans";
-$_POST['userPassword'] = "hans";
+
+
+//$_POST['userLogin'] = "luke";
+//$_POST['userPassword'] = "luke";
 
 if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_POST['userPassword'])) && (!empty($_POST['userPassword'])))
 {
@@ -31,7 +33,7 @@ if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_PO
 		$selectUser->execute();
 
 		if ($selectUser->rowCount()!=1){
-			die(json_encode("unauthorized"));
+			die(json_encode(Array("Status"=>"unauthorized")));
 		}
 		else{
 			$user=$selectUser->fetch(PDO::FETCH_ASSOC);

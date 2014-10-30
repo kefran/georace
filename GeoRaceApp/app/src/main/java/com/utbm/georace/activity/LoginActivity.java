@@ -9,10 +9,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -27,29 +25,25 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.utbm.georace.R;
 import com.utbm.georace.model.Race;
 import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
-
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,7 +68,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mLoginView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -85,7 +79,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.login);
+        mLoginView = (AutoCompleteTextView) findViewById(R.id.login);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -100,7 +94,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.login_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,11 +122,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mLoginView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String login = mLoginView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -147,13 +141,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(login)) {
+            mLoginView.setError(getString(R.string.error_field_required));
+            focusView = mLoginView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!isLoginValid(login)) {
+            mLoginView.setError(getString(R.string.error_invalid_email));
+            focusView = mLoginView;
             cancel = true;
         }
 
@@ -165,19 +159,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(login, password);
             mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isLoginValid(String loginName) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return !(loginName.isEmpty());
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 4;
     }
 
     /**
@@ -256,7 +250,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 new ArrayAdapter<String>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mLoginView.setAdapter(adapter);
     }
 
 
@@ -276,72 +270,86 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mLogin;
         private final String mPassword;
 
         UserLoginTask(String email, String password) {
-            mEmail = email;
+            mLogin = email;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
 
-            check();
 
-            //Client Http
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-                //Requete methode POST
-                HttpPost httpPost = new HttpPost("http://192.168.0.11/georace/get_login.php");
-                List<NameValuePair> param = new ArrayList<NameValuePair>();
-                param.add(new BasicNameValuePair("userName","hans"));
-                param.add(new BasicNameValuePair("userPassword","hans"));
-                try {
-                    //execution et recuperation du resultat de la requete
-                    HttpResponse response = httpClient.execute(httpPost);
-                    //Lecture du resultat
-                    HttpEntity httpEntity = response.getEntity();
-                    //recuperation du status de la reponse
-                    StatusLine statusLine = response.getStatusLine();
-                    Log.d("STATUS LINE",Integer.toString( statusLine.getStatusCode()));
+            check();//test unitaire first
 
-                    if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
+            //TODO emballer la transaction dans une classe qui gerera les transactions
+            //Client Http + params, et une requete POST
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpParams hparam =  new BasicHttpParams();
+            HttpPost httpPost = new HttpPost("http://192.168.0.11/georace/get_login.php");
 
+
+            //Préparation des parametres TODO du POST suivi du JSON , et pk pas tout JSON ?
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("userLogin", mLogin));
+            param.add(new BasicNameValuePair("userPassword",mPassword ));
+            HttpConnectionParams.setConnectionTimeout(hparam,3000);
+            HttpConnectionParams.setSoTimeout(hparam,6000);
+            httpClient.setParams(hparam);
+
+
+
+            try {
+                Log.d("Login attempt :",mLogin+" "+mPassword);
+                //execution et recuperation du resultat de la requete
+                httpPost.setEntity(new UrlEncodedFormEntity(param));
+
+                HttpResponse response = httpClient.execute(httpPost);
+
+                //Lecture du resultat
+                HttpEntity httpEntity = response.getEntity();
+                //recuperation du status de la reponse
+                StatusLine statusLine = response.getStatusLine();
+                Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
+
+
+                //la connection avec le serveur est-elle valide ?
+                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+
+                    //la réponse est au bon format ?
+                    String content_type = response.getFirstHeader("content-type").getValue();
+
+                    if (content_type.contains("application/json")) {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         httpEntity.writeTo(out);
                         out.close();
+
+                        Log.d("REQUEST RESULTS ", out.toString());
                         JSONObject jsonObject = new JSONObject(out.toString());
-                        User user = new User().fromJson(jsonObject);
+                        if(jsonObject.isNull("Status")){
+                            User user = new User(jsonObject);
+                            Log.d("JSON TEXT", jsonObject.toString());
+                            Log.d("JSON to JAVA object", user.getLoginName());
+                        }else{
+                            Log.e("Requete login ", "Accès non autorisé");
+                            return false;
+                        }
 
-                        Log.d("RESULTAT REQUETE ", out.toString());
-                        Log.d("RESULTAT JSON", jsonObject.toString());
-                        Log.d("USERNAME", user.getLoginName());
-
-                    }else
-                    {
-                        Log.e("Requete login ","Echec lors de la tentative de contact du serveur");
-
+                    } else {
+                        Log.e("REQUEST FAILED", "Une erreur est survenue dans la réponse du serveur");
                     }
 
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
+                } else {
+                    Log.e("REQUEST FAILED", "Echec lors de la tentative de contact du serveur");
                 }
 
-
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            // TODO: register the new account here.
             return true;
         }
 
@@ -368,42 +376,37 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
     }
 
-    public void check(){
+    public void check() {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
 
-      User user = new User(1,"jojo","jojo","johanny","strugala","jojo@patate.fr",30,30);
+        User user = new User(1, "jojo", "jojo", "johanny", "strugala", "jojo@patate.fr", 30, 30);
 
 
-      Track track = new Track(1,"piste numbeur ouane");
+        Track track = new Track(1, "piste numbeur ouane");
         try {
 
-            Race race = new Race(1,sdf.parse("01/01/2011 10:30:30"),sdf.parse("01/01/2012 10:30:30"),track,user);
-            Log.d("JSON out",race.toJson().toString());
-
+            Race race = new Race(1, sdf.parse("01/01/2011 10:30:30"), sdf.parse("01/01/2012 10:30:30"), track, user);
+            Log.d("TEST JSON out", race.toJson().toString());
 
             Race race1 = new Race(race.toJson());
-            Log.d("JSON out 2",race1.toJson().toString());
+            Log.d("TEST JSON out 2", race1.toJson().toString());
 
             Team team = new Team();
 
             team.setId(1);
             team.setName("Team rocket");
 
-            for(int i=0;i<10;i++)
-            team.addMember(new User(i,"jojo","jojo","johanny","strugala","jojo@patate.fr",30,30));
+            for (int i = 0; i < 10; i++)
+                team.addMember(new User(i, "jojo", "jojo", "johanny", "strugala", "jojo@patate.fr", 30, 30));
 
-            Log.d("Team json",team.toJson().toString());
+            Log.d("TEST Team json", team.toJson().toString());
             Team team1 = new Team(team.toJson());
-            Log.d("Team1 json",team1.toJson().toString());
-
-
+            Log.d("TEST Team1 json", team1.toJson().toString());
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
 
 
     }

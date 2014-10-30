@@ -37,9 +37,7 @@ public class User implements ISerializable
     private double longitude;
 
     public User() {
-    }
-
-    ;
+    };
 
     public User(int id, String loginName, String password, String firstName, String lastName, String email, double latitude, double longitude) {
         this.id = id;
