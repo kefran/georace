@@ -1,4 +1,4 @@
-package com.utbm.georace;
+package com.utbm.georace.fragment;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.utbm.georace.R;
 
 
 /**

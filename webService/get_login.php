@@ -9,7 +9,7 @@ require_once('pdo2.php');
 
 
 
-//$_POST['userLogin'] = "luke";
+//$_POST['userLogin'] = "lule";
 //$_POST['userPassword'] = "luke";
 
 if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_POST['userPassword'])) && (!empty($_POST['userPassword'])))
@@ -47,5 +47,7 @@ if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_PO
 
 		exit();
 	}
+}else{
+	die(json_encode(Array("Status"=>"unauthorized")));
 }
 ?>

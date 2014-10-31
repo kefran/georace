@@ -56,7 +56,7 @@ public class User implements ISerializable
             id = jsonObject.getInt(TAG_USER_ID);
             loginName =jsonObject.getString(TAG_USER_LOGIN);
             firstName= jsonObject.getString(TAG_USER_FIRSTNAME);
-            password = jsonObject.getString(TAG_USER_PASSWORD);
+           // password = jsonObject.getString(TAG_USER_PASSWORD); password is send, not received
             lastName = jsonObject.getString(TAG_USER_LASTNAME);
             this.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
             email = jsonObject.getString(TAG_USER_EMAIL);

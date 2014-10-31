@@ -30,6 +30,8 @@ import com.utbm.georace.model.Race;
 import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
+import com.utbm.georace.tools.Config;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -44,6 +46,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -283,29 +286,35 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
 
-            check();//test unitaire first
+         //   check();//test unitaire first
+
 
             //TODO emballer la transaction dans une classe qui gerera les transactions
-            //Client Http + params, et une requete POST
+            //instanciation client Http + params, et une requete POST
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpParams hparam =  new BasicHttpParams();
-            HttpPost httpPost = new HttpPost("http://192.168.0.11/georace/get_login.php");
-
-
-            //Préparation des parametres TODO du POST suivi du JSON , et pk pas tout JSON ?
-            List<NameValuePair> param = new ArrayList<NameValuePair>();
-            param.add(new BasicNameValuePair("userLogin", mLogin));
-            param.add(new BasicNameValuePair("userPassword",mPassword ));
-            HttpConnectionParams.setConnectionTimeout(hparam,3000);
-            HttpConnectionParams.setSoTimeout(hparam,6000);
-            httpClient.setParams(hparam);
-
+            HttpPost httpPost = new HttpPost();
 
 
             try {
+
+                //TODO du POST suivi du JSON , et pk pas tout JSON ?
+
+                //Paramètrage
+                httpPost.setURI(new URI(Config.Service.service_login));
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+                param.add(new BasicNameValuePair("userLogin", mLogin));
+                param.add(new BasicNameValuePair("userPassword",mPassword ));
+                HttpConnectionParams.setConnectionTimeout(hparam,Config.Http.connectionTimeout);
+                HttpConnectionParams.setSoTimeout(hparam,Config.Http.socketTimeout);
+                httpClient.setParams(hparam);
+
+
                 Log.d("Login attempt :",mLogin+" "+mPassword);
+
                 //execution et recuperation du resultat de la requete
                 httpPost.setEntity(new UrlEncodedFormEntity(param));
+
 
                 HttpResponse response = httpClient.execute(httpPost);
 
@@ -314,7 +323,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 //recuperation du status de la reponse
                 StatusLine statusLine = response.getStatusLine();
                 Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
-
 
                 //la connection avec le serveur est-elle valide ?
                 if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
@@ -328,11 +336,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         out.close();
 
                         Log.d("REQUEST RESULTS ", out.toString());
-                        JSONObject jsonObject = new JSONObject(out.toString());
+                       JSONObject jsonObject = new JSONObject(out.toString());
                         if(jsonObject.isNull("Status")){
                             User user = new User(jsonObject);
                             Log.d("JSON TEXT", jsonObject.toString());
                             Log.d("JSON to JAVA object", user.getLoginName());
+
                         }else{
                             Log.e("Requete login ", "Accès non autorisé");
                             return false;
@@ -340,10 +349,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                     } else {
                         Log.e("REQUEST FAILED", "Une erreur est survenue dans la réponse du serveur");
+                        //return false //pour eviter le login par webservice
                     }
 
                 } else {
                     Log.e("REQUEST FAILED", "Echec lors de la tentative de contact du serveur");
+                    //return false //pour eviter le login par webservice
                 }
 
             } catch (Exception e) {
