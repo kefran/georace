@@ -31,6 +31,7 @@ import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.Config;
+import com.utbm.georace.tools.WebService;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -288,78 +289,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
          //   check();//test unitaire first
 
+                WebService ws = WebService.getInstance();
 
-            //TODO emballer la transaction dans une classe qui gerera les transactions
-            //instanciation client Http + params, et une requete POST
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpParams hparam =  new BasicHttpParams();
-            HttpPost httpPost = new HttpPost();
+                User user = ws.getLogin(mLogin,mPassword);
 
-
-            try {
-
-                //TODO du POST suivi du JSON , et pk pas tout JSON ?
-
-                //Paramètrage
-                httpPost.setURI(new URI(Config.Service.service_login));
-                List<NameValuePair> param = new ArrayList<NameValuePair>();
-                param.add(new BasicNameValuePair("userLogin", mLogin));
-                param.add(new BasicNameValuePair("userPassword",mPassword ));
-                HttpConnectionParams.setConnectionTimeout(hparam,Config.Http.connectionTimeout);
-                HttpConnectionParams.setSoTimeout(hparam,Config.Http.socketTimeout);
-                httpClient.setParams(hparam);
-
-
-                Log.d("Login attempt :",mLogin+" "+mPassword);
-
-                //execution et recuperation du resultat de la requete
-                httpPost.setEntity(new UrlEncodedFormEntity(param));
-
-
-                HttpResponse response = httpClient.execute(httpPost);
-
-                //Lecture du resultat
-                HttpEntity httpEntity = response.getEntity();
-                //recuperation du status de la reponse
-                StatusLine statusLine = response.getStatusLine();
-                Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
-
-                //la connection avec le serveur est-elle valide ?
-                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-
-                    //la réponse est au bon format ?
-                    String content_type = response.getFirstHeader("content-type").getValue();
-
-                    if (content_type.contains("application/json")) {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        httpEntity.writeTo(out);
-                        out.close();
-
-                        Log.d("REQUEST RESULTS ", out.toString());
-                       JSONObject jsonObject = new JSONObject(out.toString());
-                        if(jsonObject.isNull("Status")){
-                            User user = new User(jsonObject);
-                            Log.d("JSON TEXT", jsonObject.toString());
-                            Log.d("JSON to JAVA object", user.getLoginName());
-
-                        }else{
-                            Log.e("Requete login ", "Accès non autorisé");
-                            return false;
-                        }
-
-                    } else {
-                        Log.e("REQUEST FAILED", "Une erreur est survenue dans la réponse du serveur");
-                        //return false //pour eviter le login par webservice
-                    }
-
-                } else {
-                    Log.e("REQUEST FAILED", "Echec lors de la tentative de contact du serveur");
-                    //return false //pour eviter le login par webservice
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                if(user!=null)Log.d("GetLogin",user.toJson().toString());
+                else Log.d("GetLogin","Non autorisé");
 
             return true;
         }

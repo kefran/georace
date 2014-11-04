@@ -7,7 +7,7 @@ public class Config {
 
     public class Url {
         //URL to the server
-        public final static String url_server = "http://172.18.0.36/georace/";
+        public final static String url_server = "http://172.18.4.238/georace/";
 
         //URL to the different webservice
         public final static String url_login = "get_login.php";
