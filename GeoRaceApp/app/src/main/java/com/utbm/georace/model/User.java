@@ -6,10 +6,15 @@ import com.utbm.georace.tools.ISerializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created by jojo on 22/10/2014.
  */
-public class User implements ISerializable {
+public class User implements ISerializable
+                            ,Comparable<User>
+{
 
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static String TAG_USER_ID = "id";
@@ -32,14 +37,12 @@ public class User implements ISerializable {
     private double longitude;
 
     public User() {
-    }
-
-    ;
+    };
 
     public User(int id, String loginName, String password, String firstName, String lastName, String email, double latitude, double longitude) {
         this.id = id;
         this.loginName = loginName;
-        this.password = password;
+        this.setPassword(password);
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -50,13 +53,13 @@ public class User implements ISerializable {
     public User(JSONObject jsonObject) {
 
         try {
-            this.setId(jsonObject.getInt(TAG_USER_ID));
-            this.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
-            this.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
-            this.setPassword(jsonObject.getString(TAG_USER_PASSWORD));
-            this.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
+            id = jsonObject.getInt(TAG_USER_ID);
+            loginName =jsonObject.getString(TAG_USER_LOGIN);
+            firstName= jsonObject.getString(TAG_USER_FIRSTNAME);
+           // password = jsonObject.getString(TAG_USER_PASSWORD); password is send, not received
+            lastName = jsonObject.getString(TAG_USER_LASTNAME);
             this.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
-            this.setEmail(jsonObject.getString(TAG_USER_EMAIL));
+            email = jsonObject.getString(TAG_USER_EMAIL);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -79,7 +82,17 @@ public class User implements ISerializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        try {
+
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            md.reset();
+            md.update(password.getBytes());
+            this.password = new String( md.digest());
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String getLoginName() {
@@ -125,7 +138,7 @@ public class User implements ISerializable {
 
 
     @Override
-    public String toJson() {
+    public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
         try {
 
@@ -133,7 +146,7 @@ public class User implements ISerializable {
             jsonObject.put(TAG_USER_LOGIN, loginName);
             jsonObject.put(TAG_USER_FIRSTNAME, firstName);
             jsonObject.put(TAG_USER_LASTNAME, lastName);
-            jsonObject.put(TAG_USER_PASSWORD, password);
+            jsonObject.put(TAG_USER_PASSWORD,  password);
             jsonObject.put(TAG_USER_EMAIL, email);
             jsonObject.put(TAG_USER_LATITUDE, latitude);
             jsonObject.put(TAG_USER_LONGITUDE, longitude);
@@ -141,7 +154,7 @@ public class User implements ISerializable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return jsonObject.toString();
+        return jsonObject;
     }
 
 
@@ -152,7 +165,7 @@ public class User implements ISerializable {
             user.setId(jsonObject.getInt(TAG_USER_ID));
             user.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
             user.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
-            user.setPassword(jsonObject.getString(TAG_USER_PASSWORD));
+            //user.setPassword(jsonObject.getString(TAG_USER_PASSWORD)); password is send , not received
             user.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
             user.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
             user.setEmail(jsonObject.getString(TAG_USER_EMAIL));
@@ -163,5 +176,20 @@ public class User implements ISerializable {
 
 
         return user;
+    }
+
+    @Override
+    public int compareTo(User user) {
+
+        if(user==null)throw new NullPointerException();
+
+        if(id==user.getId())
+            return 0;
+
+        if(id>user.getId())
+            return -1;
+
+            return 1;
+
     }
 }

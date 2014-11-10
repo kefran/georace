@@ -9,10 +9,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -27,28 +25,29 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.utbm.georace.R;
 import com.utbm.georace.model.Race;
+import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
+import com.utbm.georace.tools.Config;
+import com.utbm.georace.tools.WebService;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+            "geo@:georace", "bar@example.com:world"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -73,7 +72,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mLoginView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -84,7 +83,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.login);
+        mLoginView = (AutoCompleteTextView) findViewById(R.id.login);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -99,7 +98,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.login_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,11 +126,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mLoginView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String login = mLoginView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -146,13 +145,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(login)) {
+            mLoginView.setError(getString(R.string.error_field_required));
+            focusView = mLoginView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!isLoginValid(login)) {
+            mLoginView.setError(getString(R.string.error_invalid_email));
+            focusView = mLoginView;
             cancel = true;
         }
 
@@ -164,19 +163,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(login, password);
             mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isLoginValid(String loginName) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return !(loginName.isEmpty());
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 4;
     }
 
     /**
@@ -255,7 +254,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 new ArrayAdapter<String>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mLoginView.setAdapter(adapter);
     }
 
 
@@ -275,72 +274,28 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mLogin;
         private final String mPassword;
 
         UserLoginTask(String email, String password) {
-            mEmail = email;
+            mLogin = email;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-
-            check();
-    /*
-            //Client Http
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-                //Requete methode POST
-                HttpPost httpPost = new HttpPost("http://172.18.24.241/georace/get_login.php");
-                List<NameValuePair> param = new ArrayList<NameValuePair>();
-                param.add(new BasicNameValuePair("userName","hans"));
-                param.add(new BasicNameValuePair("userPassword","hans"));
-                try {
-                    //execution et recuperation du resultat de la requete
-                    HttpResponse response = httpClient.execute(httpPost);
-                    //Lecture du resultat
-                    HttpEntity httpEntity = response.getEntity();
-                    //recuperation du status de la reponse
-                    StatusLine statusLine = response.getStatusLine();
-                    Log.d("STATUS LINE",Integer.toString( statusLine.getStatusCode()));
-
-                    if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
-
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        httpEntity.writeTo(out);
-                        out.close();
-                        JSONObject jsonObject = new JSONObject(out.toString());
-                        User user = new User().fromJson(jsonObject);
-
-                        Log.d("RESULTAT REQUETE ", out.toString());
-                        Log.d("RESULTAT JSON", jsonObject.toString());
-                        Log.d("USERNAME", user.getLoginName());
-
-                    }else
-                    {
-                        Log.e("Requete login ","Echec lors de la tentative de contact du serveur");
-
-                    }
-
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
 
 
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-*/
-            // TODO: register the new account here.
+         //   check();//test unitaire first
+
+                WebService ws = WebService.getInstance();
+
+                User user = ws.getLogin(mLogin,mPassword);
+
+                if(user!=null)Log.d("GetLogin",user.toJson().toString());
+                else Log.d("GetLogin","Non autorisé");
+
             return true;
         }
 
@@ -367,22 +322,37 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
     }
 
-    public void check(){
+    public void check() {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
 
-      User user = new User(1,"jojo","jojo","johanny","strugala","jojo@patate.fr",30,30);
-      Track track = new Track(1,"piste numbeur ouane");
+        User user = new User(1, "jojo", "jojo", "johanny", "strugala", "jojo@patate.fr", 30, 30);
+
+
+        Track track = new Track(1, "piste numbeur ouane");
         try {
 
-            Race race = new Race(1,sdf.parse("01/01/2011 10:30:30"),sdf.parse("01/01/2012 10:30:30"),track,user);
-            Log.d("JSON out",race.toJson());
+            Race race = new Race(1, sdf.parse("01/01/2011 10:30:30"), sdf.parse("01/01/2012 10:30:30"), track, user);
+            Log.d("TEST JSON out", race.toJson().toString());
+
+            Race race1 = new Race(race.toJson());
+            Log.d("TEST JSON out 2", race1.toJson().toString());
+
+            Team team = new Team();
+
+            team.setId(1);
+            team.setName("Team rocket");
+
+            for (int i = 0; i < 10; i++)
+                team.addMember(new User(i, "jojo", "jojo", "johanny", "strugala", "jojo@patate.fr", 30, 30));
+
+            Log.d("TEST Team json", team.toJson().toString());
+            Team team1 = new Team(team.toJson());
+            Log.d("TEST Team1 json", team1.toJson().toString());
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
 
 
     }
