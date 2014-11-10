@@ -4,8 +4,8 @@ header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 header('content-type: application/json; charset=utf-8');
 
-require_once('conf.php');
-require_once('pdo2.php');
+require_once('admin/conf.php');
+require_once('admin/pdo2.php');
 
 
 
