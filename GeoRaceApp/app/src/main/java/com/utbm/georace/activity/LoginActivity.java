@@ -77,6 +77,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+    private WebService ws;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +110,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        ws = WebService.getInstance();
+
     }
 
     private void populateAutoComplete() {
@@ -166,6 +170,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = new UserLoginTask(login, password);
             mAuthTask.execute((Void) null);
         }
+
+
+
     }
 
     private boolean isLoginValid(String loginName) {
@@ -294,7 +301,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 User user = ws.getLogin(mLogin,mPassword);
 
                 if(user!=null)Log.d("GetLogin",user.toJson().toString());
-                else Log.d("GetLogin","Non autorisé");
+                else Log.d("GetLogin","Failed");
 
             return true;
         }

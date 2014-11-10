@@ -1,7 +1,10 @@
 package com.utbm.georace.tools;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.utbm.georace.model.Race;
+import com.utbm.georace.model.Team;
 import com.utbm.georace.model.User;
 
 import org.apache.http.HttpEntity;
@@ -17,6 +20,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -24,17 +28,29 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by jojo on 03/11/2014.
  */
-public class WebService  {
 
-    private static WebService instance= null;
+//Use only in ASyncTask !
+public class WebService {
+
+    private static WebService instance = null;
 
     private DefaultHttpClient httpClient;
     private HttpParams httpParams;
     private HttpPost httpPost;
+
+    private User userLogged;
+
+    private TreeMap<Integer, User> users;
+    private TreeMap<Integer, Race> races;
+    private TreeMap<Integer, Team> teams;
+
+
 
 
     private WebService() {
@@ -42,6 +58,11 @@ public class WebService  {
         httpClient = new DefaultHttpClient();
         httpParams = new BasicHttpParams();
         httpPost = new HttpPost();
+        users = new TreeMap<Integer, User>();
+        races = new TreeMap<Integer, Race>();
+        teams = new TreeMap<Integer, Team>();
+
+        userLogged=null;
 
         HttpConnectionParams.setConnectionTimeout(httpParams, Config.Http.connectionTimeout);
         HttpConnectionParams.setSoTimeout(httpParams, Config.Http.socketTimeout);
@@ -49,31 +70,53 @@ public class WebService  {
 
     }
 
-    public static WebService getInstance(){
+    public static WebService getInstance() {
 
-        if(instance==null)instance=new WebService();
+        if (instance == null) instance = new WebService();
 
         return instance;
 
     }
 
+    //check about 200 ret code, and correct datatype
     private boolean isResponseOk(HttpResponse resp) {
 
         HttpEntity httpEntity = resp.getEntity();
         StatusLine statusLine = resp.getStatusLine();
         Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
 
-
-        if (statusLine.getStatusCode() != HttpStatus.SC_OK)
+        if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+            Log.e("WebService", "Connection problem");
             return false;
+        }
 
         String content_type = resp.getFirstHeader("content-type").getValue();
 
-        if (!content_type.contains("application/json"))
+        if (!content_type.contains("application/json")) {
+            Log.e("WebService", "Server Problème");
             return false;
+        }
 
 
         return true;
+    }
+
+
+    private String getStringFromResponse(HttpResponse response) {
+        HttpEntity httpEntity = response.getEntity();
+
+        try {
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            httpEntity.writeTo(out);
+            out.close();
+            return out.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 
 
@@ -84,34 +127,36 @@ public class WebService  {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_login));
+            httpPost.setURI(new URI(Config.Service.service_login));//connection au service gerant le login
+
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("userLogin", name));
             param.add(new BasicNameValuePair("userPassword", password));
 
-            Log.d("Login attempt :", name);
+            Log.i("Login attempt :", name);
 
             httpPost.setEntity(new UrlEncodedFormEntity(param));
             HttpResponse response = httpClient.execute(httpPost);
-            HttpEntity httpEntity = response.getEntity();
+
 
             if (isResponseOk(response)) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                httpEntity.writeTo(out);
-                out.close();
 
-                Log.d("REQUEST RESULTS ", out.toString());
-                JSONObject jsonObject = new JSONObject(out.toString());
+                String respString = getStringFromResponse(response);
+                Log.d("REQUEST RESULTS ", respString);
+
+                JSONObject jsonObject = new JSONObject(respString);
                 if (jsonObject.isNull("Status")) {
                     User user = new User(jsonObject);
                     Log.d("JSON TEXT", jsonObject.toString());
                     Log.d("JSON to JAVA object", user.getLoginName());
 
+                    users.put(user.getId(), user);
+                    userLogged = user;
                     return user;
 
                 } else {
 
-                    Log.e("FAILED LOGIN ATTEMPT", "Accès non autorisé");
+                    Log.w("FAILED LOGIN ATTEMPT", "Accès non autorisé");
 
                 }
             }
@@ -122,4 +167,45 @@ public class WebService  {
 
         return null;
     }
+
+    public TreeMap<Integer, User> getUsers() {
+
+        TreeMap<Integer, User> userTreeMap = new TreeMap<Integer, User>();
+
+        try {
+
+            httpPost.setURI(new URI(Config.Service.service_data));
+
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("user", "list"));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));
+
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray userList = new JSONArray(responseString);
+                int size = userList.length();
+                User buf=null;
+
+
+                for(int i=0;i<size;i++)
+                {
+                    buf =new User(userList.getJSONObject(i));
+                    users.put(buf.getId(),buf);
+                    userTreeMap.put(buf.getId(),buf);
+                }
+
+                Log.d("WebService getUser", responseString);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userTreeMap;
+    }
+
+
 }
