@@ -49,10 +49,10 @@ public class MainActivity extends Activity {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // Create a new fragment and specify the menu item to show based on position
-        /*Fragment fragment = new CourseFragment();
-        Bundle args = new Bundle();
-        args.putInt(CourseFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
+        Fragment fragment = new CourseFragment();
+        //Bundle args = new Bundle();
+        //args.putInt(CourseFragment.ARG_PLANET_NUMBER, position);
+        //fragment.setArguments(args);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getFragmentManager();
@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(mMenuList[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);*/
+        mDrawerLayout.closeDrawer(mDrawerList);
     }
 
     @Override

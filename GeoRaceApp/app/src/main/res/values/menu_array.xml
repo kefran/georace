@@ -2,7 +2,10 @@
 <resources>
     <string-array
         name="menu_array">
-        <item>Liste des courses</item>
-        <item>Options</item>
+        <item>Rechercher une course</item>
+        <item>Créer une course</item>
+        <item>Mes scores</item>
+        <item>Mon compte</item>
+        <item>Déconnexion</item>
     </string-array>
 </resources>

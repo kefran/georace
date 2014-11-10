@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Password Protected Area"
+AuthUserFile /home/kefran/.htpasswd
+Require valid-user
