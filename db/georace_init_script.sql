@@ -11,7 +11,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Export de la structure de la base pour georace
-DROP DATABASE IF EXISTS `georace`;
+--DROP DATABASE IF EXISTS `georace`;
 CREATE DATABASE IF NOT EXISTS `georace` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `georace`;
 
