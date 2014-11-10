@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.utbm.georace.R;
+import com.utbm.georace.fragment.CourseFragment;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
 
@@ -33,6 +36,8 @@ public class MainActivity extends Activity {
     private View mProgressView;
 
     private BuildMainPageTask buildMainPageTask;
+
+    protected ArrayList<User> usersArray;
 
 
     @Override
@@ -56,7 +61,7 @@ public class MainActivity extends Activity {
 
         buildMainPageTask = new BuildMainPageTask();
         buildMainPageTask.execute();
-        showProgress(true);
+       // showProgress(true);
 
 
     }
@@ -155,17 +160,22 @@ public class MainActivity extends Activity {
         WebService ws = WebService.getInstance();
 
         TreeMap<Integer,User> users = ws.getUsers();
-        ArrayList<User> usersArray = new ArrayList<User>();
+        usersArray = new ArrayList<User>();
 
         for(Map.Entry<Integer,User> u :users.entrySet())
         usersArray.add(u.getValue());
 
 
-        ArrayAdapter<User> userArrayAdapter = new ArrayAdapter<User>(MainActivity.this,android.R.layout.simple_list_item_1,usersArray);
-        mUserlist.setAdapter(userArrayAdapter);
-         showProgress(false);
 
          return true;
+     }
+
+     @Override
+     protected void onPostExecute(Boolean aBoolean) {
+         super.onPostExecute(aBoolean);
+         ArrayAdapter<User> userArrayAdapter = new ArrayAdapter<User>(MainActivity.this,android.R.layout.simple_list_item_1,usersArray);
+         mUserlist.setAdapter(userArrayAdapter);
+         showProgress(false);
      }
  }
 
