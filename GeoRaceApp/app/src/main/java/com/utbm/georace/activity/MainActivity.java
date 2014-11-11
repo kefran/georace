@@ -50,8 +50,8 @@ public class MainActivity extends Activity {
         mMenuList = getResources().getStringArray(R.array.menu_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mUserlist = (ListView) findViewById(R.id.UserListView);
-        mProgressView = findViewById(R.id.main_progress);
+        //mUserlist = (ListView) findViewById(R.id.UserListView);
+        //mProgressView = findViewById(R.id.main_progress);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
@@ -59,8 +59,8 @@ public class MainActivity extends Activity {
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        buildMainPageTask = new BuildMainPageTask();
-        buildMainPageTask.execute();
+       // buildMainPageTask = new BuildMainPageTask();
+        //buildMainPageTask.execute();
        // showProgress(true);
 
 
