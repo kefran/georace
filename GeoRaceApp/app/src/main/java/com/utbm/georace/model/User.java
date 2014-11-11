@@ -1,5 +1,7 @@
 package com.utbm.georace.model;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.utbm.georace.tools.ISerializable;
 
@@ -12,9 +14,8 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by jojo on 22/10/2014.
  */
-public class User implements ISerializable
-                            ,Comparable<User>
-{
+public class User  implements ISerializable
+                            ,Comparable<User> {
 
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static String TAG_USER_ID = "id";
@@ -27,7 +28,7 @@ public class User implements ISerializable
     final static String TAG_USER_LONGITUDE = "longitude";
 
 
-    private int id;
+    private int id=-1;
     private String loginName;
     private String password;
     private String firstName;
@@ -35,8 +36,12 @@ public class User implements ISerializable
     private String email;
     private double latitude;
     private double longitude;
+    private boolean modified; //use to synchronize with server
+
+
 
     public User() {
+        id=-1;
     };
 
     public User(int id, String loginName, String password, String firstName, String lastName, String email, double latitude, double longitude) {
@@ -74,6 +79,7 @@ public class User implements ISerializable
     }
 
     public void setId(int id) {
+        modified=true;
         this.id = id;
     }
 
@@ -88,6 +94,7 @@ public class User implements ISerializable
             md.reset();
             md.update(password.getBytes());
             this.password = new String( md.digest());
+            modified=true;
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -101,6 +108,7 @@ public class User implements ISerializable
 
     public void setLoginName(String loginName) {
         this.loginName = loginName;
+        modified=true;
     }
 
     public String getFirstName() {
@@ -108,7 +116,9 @@ public class User implements ISerializable
     }
 
     public void setFirstName(String firstName) {
+        modified=true;
         this.firstName = firstName;
+
     }
 
     public String getLastName() {
@@ -116,6 +126,7 @@ public class User implements ISerializable
     }
 
     public void setLastName(String lastName) {
+        modified=true;
         this.lastName = lastName;
     }
 
@@ -124,6 +135,7 @@ public class User implements ISerializable
     }
 
     public void setEmail(String email) {
+        modified=true;
         this.email = email;
     }
 
@@ -132,6 +144,7 @@ public class User implements ISerializable
     }
 
     public void setPosition(double latitude, double longitude) {
+        modified=true;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -192,4 +205,7 @@ public class User implements ISerializable
             return 1;
 
     }
+
+
+
 }

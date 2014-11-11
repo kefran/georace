@@ -1,18 +1,20 @@
-<?php
+<?php 
+//TODO couche DAO 
+//peut être qu'un cadricielle pourrait aider?
 
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 header('content-type: application/json; charset=utf-8');
 
-require_once('admin/conf.php');
-require_once('admin/pdo2.php');
+require_once('conf.php');
+require_once('pdo2.php');
 
 
 
-//$_POST['userLogin'] = "lule";
+$_POST['user'] = "list";
 //$_POST['userPassword'] = "luke";
 
-if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_POST['userPassword'])) && (!empty($_POST['userPassword'])))
+if (isset($_POST['user']))
 {
 	$pdo =null;
 	try {
@@ -24,19 +26,15 @@ if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_PO
 											,u.email
 											,u.latitude
 											,u.longitude
-									 FROM user u
-									 WHERE login = :userLogin
-									 AND password = :userPassword;");
-		$pwd = sha1($_POST['userPassword']);
-		$selectUser->bindParam(':userLogin',$_POST['userLogin'] ,PDO::PARAM_STR);
-		$selectUser->bindParam(':userPassword',$pwd ,PDO::PARAM_STR);
+									 FROM user u");
+		
 		$selectUser->execute();
 
-		if ($selectUser->rowCount()!=1){
-			die(json_encode(Array("Status"=>"unauthorized")));
+		if ($selectUser->rowCount()==0){
+			die(json_encode(Array("Status"=>"PROBLEM in pdo")));
 		}
 		else{
-			$user=$selectUser->fetch(PDO::FETCH_ASSOC);
+			$user=$selectUser->fetchAll(PDO::FETCH_ASSOC);
 			die(json_encode($user));
 		}
 
@@ -50,4 +48,7 @@ if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_PO
 }else{
 	die(json_encode(Array("Status"=>"unauthorized")));
 }
+?>
+
+
 ?>
