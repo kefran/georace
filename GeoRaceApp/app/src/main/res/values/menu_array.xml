@@ -2,6 +2,8 @@
 <resources>
     <string-array
         name="menu_array">
+        <item>Course</item>
+        <item>Résumé</item>
         <item>Rechercher une course</item>
         <item>Créer une course</item>
         <item>Mes scores</item>

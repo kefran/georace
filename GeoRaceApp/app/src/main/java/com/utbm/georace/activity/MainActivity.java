@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.utbm.georace.R;
-import com.utbm.georace.fragment.CourseFragment;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
 
@@ -37,8 +34,6 @@ public class MainActivity extends Activity {
 
     private BuildMainPageTask buildMainPageTask;
 
-    protected ArrayList<User> usersArray;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +45,7 @@ public class MainActivity extends Activity {
         mMenuList = getResources().getStringArray(R.array.menu_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        //mUserlist = (ListView) findViewById(R.id.UserListView);
+       // mUserlist = (ListView) findViewById(R.id.UserListView);
         //mProgressView = findViewById(R.id.main_progress);
 
         // Set the adapter for the list view
@@ -60,8 +55,8 @@ public class MainActivity extends Activity {
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
        // buildMainPageTask = new BuildMainPageTask();
-        //buildMainPageTask.execute();
-       // showProgress(true);
+      //  buildMainPageTask.execute();
+      //  showProgress(true);
 
 
     }
@@ -111,16 +106,16 @@ public class MainActivity extends Activity {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // Create a new fragment and specify the menu item to show based on position
-        Fragment fragment = new CourseFragment();
+        //Fragment fragment = new CourseFragment();
         //Bundle args = new Bundle();
         //args.putInt(CourseFragment.ARG_PLANET_NUMBER, position);
         //fragment.setArguments(args);
 
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
+       // FragmentManager fragmentManager = getFragmentManager();
+        //fragmentManager.beginTransaction()
+          //      .replace(R.id.content_frame, fragment)
+            //    .commit();
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -160,22 +155,17 @@ public class MainActivity extends Activity {
         WebService ws = WebService.getInstance();
 
         TreeMap<Integer,User> users = ws.getUsers();
-        usersArray = new ArrayList<User>();
+        ArrayList<User> usersArray = new ArrayList<User>();
 
         for(Map.Entry<Integer,User> u :users.entrySet())
         usersArray.add(u.getValue());
 
 
+        ArrayAdapter<User> userArrayAdapter = new ArrayAdapter<User>(MainActivity.this,android.R.layout.simple_list_item_1,usersArray);
+        mUserlist.setAdapter(userArrayAdapter);
+         showProgress(false);
 
          return true;
-     }
-
-     @Override
-     protected void onPostExecute(Boolean aBoolean) {
-         super.onPostExecute(aBoolean);
-         ArrayAdapter<User> userArrayAdapter = new ArrayAdapter<User>(MainActivity.this,android.R.layout.simple_list_item_1,usersArray);
-         mUserlist.setAdapter(userArrayAdapter);
-         showProgress(false);
      }
  }
 
