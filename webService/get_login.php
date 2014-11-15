@@ -9,9 +9,6 @@ require_once('admin/pdo2.php');
 
 
 
-//$_POST['userLogin'] = "lule";
-//$_POST['userPassword'] = "luke";
-
 if ((isset($_POST['userLogin'])) && (!empty($_POST['userLogin'])) && (isset($_POST['userPassword'])) && (!empty($_POST['userPassword'])))
 {
 	$pdo =null;
