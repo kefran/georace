@@ -52,9 +52,6 @@ public class WebService {
     private TreeMap<Integer, Race> races;//Key = race id Value = Race Object
     private TreeMap<Integer, Team> teams;//Key = teams id Value = Team Object
 
-
-
-
     private WebService() {
 
         httpClient = new DefaultHttpClient();
@@ -215,9 +212,8 @@ public class WebService {
         if(userLogged==null){
            Log.e("Web Service","User by distance failed, no logged user");
             return null;
-
         }
-        users = getUsers();
+        users = getUsers();//TODO check synchronisation with server data
         TreeMap<Float,User> userDistance = new TreeMap<Float, User>();//Key Distance with the logged user
 
         LatLng userLoggedLatLng = userLogged.getPosition();
@@ -242,9 +238,50 @@ public class WebService {
             Log.d("Distance to ", String.valueOf(userLoggedLocation.distanceTo(bufLocation))+"User"+bufUser.getLoginName());
 
         }
-
-
         return userDistance;
+    }
+
+    public TreeMap<Integer,Race> getRaces(){
+
+       TreeMap<Integer, Race> raceTreeMap = new TreeMap<Integer, Race>();
+
+        try {
+
+            httpPost.setURI(new URI(Config.Service.service_race));
+
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("user", "list"));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray raceList = new JSONArray(responseString);
+                int size = raceList.length();
+                Race buf=null;
+
+
+                for(int i=0;i<size;i++)
+                {
+                    buf =new Race(raceList.getJSONObject(i));
+                    races.put(buf.getId(),buf);
+                    raceTreeMap.put(buf.getId(),buf);
+                }
+
+                Log.d("WebService getUsers", responseString);
+
+            }
+
+        } catch (Exception e) {
+            Log.d("WebService getUsers", "Echec de la récuperation des données depuis le serveur");
+
+            e.printStackTrace();
+
+        }
+        return raceTreeMap;
+
     }
 
 

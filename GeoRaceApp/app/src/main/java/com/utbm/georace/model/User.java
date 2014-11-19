@@ -159,7 +159,7 @@ public class User  implements ISerializable
             jsonObject.put(TAG_USER_LOGIN, loginName);
             jsonObject.put(TAG_USER_FIRSTNAME, firstName);
             jsonObject.put(TAG_USER_LASTNAME, lastName);
-            jsonObject.put(TAG_USER_PASSWORD,  password);
+         //   jsonObject.put(TAG_USER_PASSWORD,  password);
             jsonObject.put(TAG_USER_EMAIL, email);
             jsonObject.put(TAG_USER_LATITUDE, latitude);
             jsonObject.put(TAG_USER_LONGITUDE, longitude);
@@ -171,24 +171,25 @@ public class User  implements ISerializable
     }
 
 
-    public User fromJson(JSONObject jsonObject) {
+    public boolean fromJson(JSONObject jsonObject) {
 
-        User user = new User();
+
         try {
-            user.setId(jsonObject.getInt(TAG_USER_ID));
-            user.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
-            user.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
+            this.setId(jsonObject.getInt(TAG_USER_ID));
+            this.setLoginName(jsonObject.getString(TAG_USER_LOGIN));
+            this.setFirstName(jsonObject.getString(TAG_USER_FIRSTNAME));
             //user.setPassword(jsonObject.getString(TAG_USER_PASSWORD)); password is send , not received
-            user.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
-            user.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
-            user.setEmail(jsonObject.getString(TAG_USER_EMAIL));
+            this.setLastName(jsonObject.getString(TAG_USER_LASTNAME));
+            this.setPosition(jsonObject.getDouble(TAG_USER_LATITUDE), jsonObject.getDouble(TAG_USER_LONGITUDE));
+            this.setEmail(jsonObject.getString(TAG_USER_EMAIL));
 
         } catch (JSONException e) {
             e.printStackTrace();
+            return false;
         }
 
 
-        return user;
+        return true;
     }
 
     @Override

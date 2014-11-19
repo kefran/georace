@@ -8,5 +8,5 @@ import org.json.JSONObject;
 public interface ISerializable<T> {
 
     public JSONObject toJson();
-    public  T fromJson(JSONObject jsonObject);
+    public  boolean fromJson(JSONObject jsonObject);//Refresh the object value
 }

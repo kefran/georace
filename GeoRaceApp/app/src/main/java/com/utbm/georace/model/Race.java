@@ -23,7 +23,7 @@ public class Race implements ISerializable{
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static public String TAG_RACE_ID="id";
     final static public String TAG_RACE_START="date_start";
-    final static public String TAG_RACE_END="date_end";
+    final static public String TAG_RACE_END="date_end"; //'YYYY-MM-DD HH:MM:SS' SQL DATE TIME FORMAT
     final static public String TAG_RACE_TRACK="track";
     final static public String TAG_RACE_ORGANIZER="organizer";
 
@@ -49,7 +49,7 @@ public class Race implements ISerializable{
     public Race(JSONObject json) {
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy kk:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
             this.setId(json.getInt(TAG_RACE_ID));
             this.setDate_start(sdf.parse(json.getString(TAG_RACE_START)));
@@ -104,25 +104,29 @@ public class Race implements ISerializable{
     }
 
     @Override
-    public Race fromJson(JSONObject jsonObject) {
-        Race race = new Race();
+    public boolean fromJson(JSONObject jsonObject) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+
         try {
 
-            race.setId(jsonObject.getInt(TAG_RACE_ID));
-            race.setOrganizer(new User(jsonObject.getJSONObject(TAG_RACE_ORGANIZER)));
-            race.setTrack(new Track(jsonObject.getJSONObject(TAG_RACE_TRACK)));
+            this.setId(jsonObject.getInt(TAG_RACE_ID));
+            this.setOrganizer(new User(jsonObject.getJSONObject(TAG_RACE_ORGANIZER)));
+            this.setTrack(new Track(jsonObject.getJSONObject(TAG_RACE_TRACK)));
+            this.setDate_end(sdf.parse(jsonObject.getString(TAG_RACE_END)));
+            this.setDate_start(sdf.parse(jsonObject.getString(TAG_RACE_START)));
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return race;
+        return true;
     }
 
     @Override
     public JSONObject toJson() {
 
         JSONObject jsonObject = new JSONObject();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
         try {
 
@@ -132,7 +136,7 @@ public class Race implements ISerializable{
             jsonObject.put(TAG_RACE_TRACK, track.toJson());
             jsonObject.put(TAG_RACE_ORGANIZER,organizer.toJson());
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

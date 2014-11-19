@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -18,7 +19,7 @@ public class Team implements ISerializable {
 
     final static public String TAG_TEAM_ID = "id";
     final static public String TAG_TEAM_NAME = "name";
-    final static public String TAG_TEAM_MEMBER = "user";//TODO mise au point du format d'echange php <-> json <-> java -user+users?
+    final static public String TAG_TEAM_MEMBER = "user";
 
 
     private int id;
@@ -33,7 +34,7 @@ public class Team implements ISerializable {
 
         members = new TreeSet<User>();
         JSONArray jsArray;
-        User buf;
+
 
         try {
 
@@ -44,15 +45,11 @@ public class Team implements ISerializable {
 
             int nbMember = jsArray.length();
 
-            int i = nbMember - 1, it = 0;
-
-            if (nbMember != 0) {
-                while (i != it) {
-                    buf = new User(jsArray.getJSONObject(it));
-                    this.addMember(buf);
-                    it+=1;
-                }
+            for(int i =0;i<nbMember;i++)
+            {
+                members.add(new User(jsArray.getJSONObject(i)));
             }
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -100,15 +97,16 @@ public class Team implements ISerializable {
     public JSONObject toJson() {
         JSONObject jsObj = new JSONObject();
         JSONArray jsArray = new JSONArray();
-        Iterator<User> it = members.iterator();
+        User buf ;
 
-        User buf;
-        while (it.hasNext()) {
 
-            buf = it.next();
-            jsArray.put(buf.toJson());
-
+        for( User e : members)
+        {
+            jsArray.put(e.toJson());
         }
+
+
+
 
         try {
 
@@ -125,30 +123,28 @@ public class Team implements ISerializable {
     }
 
     @Override
-    public Team fromJson(JSONObject jsonObject) {
+    public boolean fromJson(JSONObject jsonObject) {
 
-        Team team = new Team();
         JSONArray jsArray;
         User buf;
 
         try {
-            team.setId(jsonObject.getInt(TAG_TEAM_ID));
-            team.setName(jsonObject.getString(TAG_TEAM_NAME));
+            this.setId(jsonObject.getInt(TAG_TEAM_ID));
+            this.setName(jsonObject.getString(TAG_TEAM_NAME));
             jsArray = jsonObject.getJSONArray(TAG_TEAM_MEMBER);
-            int nbMember = (jsArray==null)?jsArray.length():0;
-            int i = nbMember-1, it = 0;
+            int nbMember = jsArray.length();
 
-            if (nbMember != 0) {
-                while (i != it) {
-                    buf = new User(jsArray.getJSONObject(i));
-                    team.addMember(buf);
-                }
+
+            for(int i=0;i<nbMember+1;i++)
+            {
+               buf = new User(jsArray.getJSONObject(i));
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
+            return false;
         }
 
-        return team;
+        return true;
     }
 }

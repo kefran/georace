@@ -16,7 +16,7 @@ public class Photo implements ISerializable {
     }
 
     @Override
-    public Photo fromJson(JSONObject jsonObject) {
-        return null;
+    public boolean fromJson(JSONObject jsonObject) {
+        return true;
     }
 }

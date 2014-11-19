@@ -11,6 +11,8 @@ public class Config {
 
         //URL to the different webservice
         public final static String url_login = "get_login.php";
+        public final static String url_user = "get_user.php";
+        public final static String url_race = "get_race.php";
         public final static String url_data = "get_data.php";
 
     }
@@ -18,7 +20,10 @@ public class Config {
     public class Service{
 
         public final static String service_login = Url.url_server+Url.url_login;
+        public final static String service_user = Url.url_server+Url.url_user;
+        public final static String service_race = Url.url_server+Url.url_race;
         public final static String service_data = Url.url_server+Url.url_data;
+
 
     }
 

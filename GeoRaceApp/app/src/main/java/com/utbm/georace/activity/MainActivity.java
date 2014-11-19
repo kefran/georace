@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,13 +28,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+                           implements CourseFragment.OnFragmentInteractionListener {
 
     private String[] mMenuList;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ListView mUserlist;
-    private View mProgressView;
 
     private BuildMainPageTask buildMainPageTask;
 
@@ -44,14 +45,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
         mMenuList = getResources().getStringArray(R.array.menu_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mUserlist = (ListView) findViewById(R.id.UserListView);
-        mProgressView = findViewById(R.id.main_progress);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
@@ -61,44 +58,13 @@ public class MainActivity extends Activity {
 
         buildMainPageTask = new BuildMainPageTask();
         buildMainPageTask.execute();
-       // showProgress(true);
 
 
     }
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-           /* mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-*/
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-        }
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -111,7 +77,7 @@ public class MainActivity extends Activity {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // Create a new fragment and specify the menu item to show based on position
-        Fragment fragment = new CourseFragment();
+        Fragment fragment = CourseFragment.newInstance("PROUT","POUETTE");
         //Bundle args = new Bundle();
         //args.putInt(CourseFragment.ARG_PLANET_NUMBER, position);
         //fragment.setArguments(args);
@@ -165,9 +131,7 @@ public class MainActivity extends Activity {
         for(Map.Entry<Integer,User> u :users.entrySet())
         usersArray.add(u.getValue());
 
-
-
-         return true;
+        return true;
      }
 
      @Override
@@ -175,7 +139,7 @@ public class MainActivity extends Activity {
          super.onPostExecute(aBoolean);
          ArrayAdapter<User> userArrayAdapter = new ArrayAdapter<User>(MainActivity.this,android.R.layout.simple_list_item_1,usersArray);
          mUserlist.setAdapter(userArrayAdapter);
-         showProgress(false);
+
      }
  }
 

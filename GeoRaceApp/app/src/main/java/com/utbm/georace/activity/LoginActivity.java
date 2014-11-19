@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.utbm.georace.R;
+import com.utbm.georace.model.Checkpoint;
 import com.utbm.georace.model.Race;
 import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
@@ -52,6 +53,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 
 /**
@@ -294,7 +296,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
 
-         //   check();//test unitaire first
+            check();//test unitaire first
 
                 WebService ws = WebService.getInstance();
 
@@ -331,15 +333,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     public void check() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
         User user = new User(1, "jojo", "jojo", "johanny", "strugala", "jojo@patate.fr", 30, 30);
 
 
-        Track track = new Track(1, "piste numbeur ouane");
+        TreeMap<Integer,Checkpoint> checkpoints = new TreeMap<Integer, Checkpoint>();
+        Checkpoint cp = new Checkpoint(1,"Checkpoint 1",10,10,user);
+        checkpoints.put(cp.getId(),cp);
+        Track track = new Track(1, "piste numbeur ouane",checkpoints);
         try {
 
-            Race race = new Race(1, sdf.parse("01/01/2011 10:30:30"), sdf.parse("01/01/2012 10:30:30"), track, user);
+            Race race = new Race(1, sdf.parse("2011-01-01 10:30:30"), sdf.parse("2012-01-01 10:30:31"), track, user);
             Log.d("TEST JSON out", race.toJson().toString());
 
             Race race1 = new Race(race.toJson());
