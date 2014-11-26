@@ -4,9 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,15 +20,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.utbm.georace.R;
+import com.utbm.georace.fragment.UserPortrait;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements UserPortrait.OnFragmentInteractionListener{
 
     private String[] mMenuList;
     private DrawerLayout mDrawerLayout;
@@ -35,11 +41,12 @@ public class MainActivity extends Activity {
     private BuildMainPageTask buildMainPageTask;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         mMenuList = getResources().getStringArray(R.array.menu_array);
@@ -94,6 +101,11 @@ public class MainActivity extends Activity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
 
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

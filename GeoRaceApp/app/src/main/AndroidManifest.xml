@@ -13,6 +13,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -22,6 +23,14 @@
         <activity
             android:name=".activity.Register"
             android:label="@string/title_activity_register" >
+        </activity>
+        <activity
+            android:name=".activity_course"
+            android:label="@string/title_activity_activity_course" >
+        </activity>
+        <activity
+            android:name=".activity.CurrentRaceActivity"
+            android:label="@string/title_activity_current_race" >
         </activity>
     </application>
 
