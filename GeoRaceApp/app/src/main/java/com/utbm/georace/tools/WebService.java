@@ -1,8 +1,10 @@
 package com.utbm.georace.tools;
 
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.utbm.georace.model.Race;
 import com.utbm.georace.model.Team;
 import com.utbm.georace.model.User;
@@ -34,7 +36,7 @@ import java.util.TreeMap;
 /**
  * Created by jojo on 03/11/2014.
  */
-
+//TODO Synchronization check
 //Use only in ASyncTask !
 public class WebService {
 
@@ -46,9 +48,9 @@ public class WebService {
 
     private User userLogged;
 
-    private TreeMap<Integer, User> users;
-    private TreeMap<Integer, Race> races;
-    private TreeMap<Integer, Team> teams;
+    private TreeMap<Integer, User> users;//Key = user id Value = User Object
+    private TreeMap<Integer, Race> races;//Key = race id Value = Race Object
+    private TreeMap<Integer, Team> teams;//Key = teams id Value = Team Object
 
 
 
@@ -197,7 +199,7 @@ public class WebService {
                     userTreeMap.put(buf.getId(),buf);
                 }
 
-                Log.d("WebService getUser", responseString);
+                Log.d("WebService getUsers", responseString);
 
             }
 
@@ -205,6 +207,44 @@ public class WebService {
             e.printStackTrace();
         }
         return userTreeMap;
+    }
+
+    public TreeMap<Float,User> getUsersByDistance(){
+
+
+        if(userLogged==null){
+           Log.e("Web Service","User by distance failed, no logged user");
+            return null;
+
+        }
+        users = getUsers();
+        TreeMap<Float,User> userDistance = new TreeMap<Float, User>();//Key Distance with the logged user
+
+        LatLng userLoggedLatLng = userLogged.getPosition();
+
+        LatLng bufLatLng = null;
+        Location bufLocation =new Location("User to test");
+
+        Location userLoggedLocation = new Location("userLoggedPosition");
+        userLoggedLocation.setLatitude(userLoggedLatLng.latitude);
+        userLoggedLocation.setLongitude(userLoggedLatLng.longitude);
+
+
+        //then the magic occurs , sort the user by distance with the logged one
+        for(Map.Entry<Integer,User> u : users.entrySet()){
+
+            User bufUser = u.getValue();
+            bufLatLng = bufUser.getPosition();
+            bufLocation.setLongitude(bufLatLng.longitude);
+            bufLocation.setLatitude(bufLatLng.latitude);
+
+            userDistance.put(userLoggedLocation.distanceTo(bufLocation),bufUser);
+            Log.d("Distance to ", String.valueOf(userLoggedLocation.distanceTo(bufLocation))+"User"+bufUser.getLoginName());
+
+        }
+
+
+        return userDistance;
     }
 
 

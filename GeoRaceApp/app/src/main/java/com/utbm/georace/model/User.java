@@ -206,6 +206,11 @@ public class User  implements ISerializable
 
     }
 
+    @Override
+    public String toString(){
+
+        return new String(this.getLoginName());
+    }
 
 
 }
