@@ -6,23 +6,56 @@ android:layout_width="match_parent"
 android:layout_height="match_parent">
 
 <!-- The main content view -->
-<FrameLayout
+<RelativeLayout
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <!-- <ListView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:id="@+id/UserListView"
-         android:layout_gravity="left|top" />
-
-         -->
- </FrameLayout>
+    android:layout_height="match_parent"
+    android:padding="20px">
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/welcomeLib"
+        android:text="Bienvenue sur GéoRace"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#96CA2D"
+        android:layout_marginBottom="20px"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lastRaceLib"
+        android:text="Dernières participations aux courses"
+        android:layout_below="@id/welcomeLib"
+        android:layout_alignParentLeft="true"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textStyle="bold"
+        />
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listLastRace"
+        android:layout_below="@+id/lastRaceLib"
+        android:layout_alignParentLeft="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/friendsLib"
+        android:text="Participations des amis"
+        android:layout_below="@+id/listLastRace"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textStyle="bold"/>
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listFriends"
+        android:layout_below="@+id/friendsLib"
+        android:layout_alignParentLeft="true" />
+ </RelativeLayout>
  <!-- The navigation drawer -->
-
-
-
     <ListView android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="fill_parent"
