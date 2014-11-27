@@ -270,12 +270,12 @@ public class WebService {
                     raceTreeMap.put(buf.getId(),buf);
                 }
 
-                Log.d("WebService getUsers", responseString);
+                Log.d("WebService getRaces", responseString);
 
             }
 
         } catch (Exception e) {
-            Log.d("WebService getUsers", "Echec de la récuperation des données depuis le serveur");
+            Log.d("WebService getRaces", "Echec de la récuperation des données depuis le serveur");
 
             e.printStackTrace();
 
