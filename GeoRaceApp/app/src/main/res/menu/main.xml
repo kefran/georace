@@ -1,8 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-</menu>
+    <item android:id="@+id/actionAccueil"
+        android:icon="@drawable/ic_launcher"
+        android:title="Accueil"/>
+    <item android:id="@+id/actionRace"
+        android:icon="@drawable/ic_launcher"
+        android:title="Course"/>
+    <item android:id="@+id/actionSearchRace"
+        android:icon="@drawable/ic_launcher"
+        android:title="Rechercher une course"/>
+    <item android:id="@+id/actionCreateRace"
+        android:icon="@drawable/ic_launcher"
+        android:title="Créer une course"/>
+    <item android:id="@+id/actionScore"
+        android:icon="@drawable/ic_launcher"
+        android:title="Mes scores"/>
+    <item android:id="@+id/actionAccount"
+        android:icon="@drawable/ic_launcher"
+        android:title="Mon compte"/>
+    <item android:id="@+id/actionLogOff"
+        android:icon="@drawable/ic_launcher"
+        android:title="Déconnexion"/>
+ luke</menu>
