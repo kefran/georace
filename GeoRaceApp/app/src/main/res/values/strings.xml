@@ -7,5 +7,10 @@
     <string name="title_activity_register">Register</string>
     <string name="menu_liste_course">Liste des courses</string>
     <string name="hello_blank_fragment">Hello blank fragment COURSE</string>
+    <string name="title_activity_activity_course">activity_course</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_activity_current_race">CurrentRaceActivity</string>
 
 </resources>
