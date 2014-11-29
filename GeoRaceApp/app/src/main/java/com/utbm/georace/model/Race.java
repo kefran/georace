@@ -2,13 +2,9 @@ package com.utbm.georace.model;
 
 import com.utbm.georace.tools.ISerializable;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

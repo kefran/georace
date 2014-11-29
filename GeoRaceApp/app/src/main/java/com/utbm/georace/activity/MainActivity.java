@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,9 @@ import android.widget.ListView;
 
 import com.utbm.georace.R;
 import com.utbm.georace.fragment.UserPortrait;
+import com.utbm.georace.model.Checkpoint;
+import com.utbm.georace.model.Participation;
+import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
 
@@ -35,8 +40,7 @@ public class MainActivity extends Activity implements UserPortrait.OnFragmentInt
     private String[] mMenuList;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    private ListView mUserlist;
-    private View mProgressView;
+
 
     private BuildMainPageTask buildMainPageTask;
 
@@ -52,8 +56,8 @@ public class MainActivity extends Activity implements UserPortrait.OnFragmentInt
         mMenuList = getResources().getStringArray(R.array.menu_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mUserlist = (ListView) findViewById(R.id.UserListView);
-        mProgressView = findViewById(R.id.main_progress);
+
+
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
@@ -67,41 +71,7 @@ public class MainActivity extends Activity implements UserPortrait.OnFragmentInt
 
 
     }
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-           /* mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-*/
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-
-        }
-    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -169,13 +139,22 @@ public class MainActivity extends Activity implements UserPortrait.OnFragmentInt
         TreeMap<Integer,User> users = ws.getUsers();
         ArrayList<User> usersArray = new ArrayList<User>();
 
-        for(Map.Entry<Integer,User> u :users.entrySet())
-        usersArray.add(u.getValue());
+        TreeMap<Integer,Checkpoint> cp = ws.getCheckpointsTrack(2);
+        TreeMap<Integer,Track> t = ws.getTracks();
 
+         for(Map.Entry<Integer,Track> e : t.entrySet())
+         {
+             Track buf = e.getValue();
+             Log.d("Main activity TRACKS", buf.getName());
+             for(Map.Entry<Integer,Checkpoint> f : buf.getCheckpoints().entrySet())
+                Log.d("Main Activity CHECKPOINTS",f.getValue().getName());
 
-        ArrayAdapter<User> userArrayAdapter = new ArrayAdapter<User>(MainActivity.this,android.R.layout.simple_list_item_1,usersArray);
-        mUserlist.setAdapter(userArrayAdapter);
-         showProgress(false);
+         }
+
+         TreeMap<Pair<Integer,Integer>,Participation> part = ws.getParticipation();
+
+         for(Map.Entry<Pair<Integer,Integer>,Participation> e : part.entrySet())
+          Log.d("MAIN ACTIVITY PARTICIPATION",e.getValue().getUser().getFirstName());
 
          return true;
      }

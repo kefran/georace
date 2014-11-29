@@ -10,12 +10,11 @@ import org.json.JSONObject;
 public class Checkpoint implements ISerializable {
 
     //La valeur des TAG doit être indentique au colonne de la bdd
-    final static String TAG_CHECKPOINT_ID ="id";
-    final static String TAG_CHECKPOINT_NAME ="name";
-    final static String TAG_CHECKPOINT_LATITUDE="latitude";
-    final static String TAG_CHECKPOINT_LONGITUDE="longitude";
-    final static String TAG_CHECKPOINT_CREATOR="creator";
-
+    final static public String TAG_CHECKPOINT_ID ="id";
+    final static public String TAG_CHECKPOINT_NAME ="name";
+    final static public String TAG_CHECKPOINT_LATITUDE="latitude";
+    final static public String TAG_CHECKPOINT_LONGITUDE="longitude";
+    final static public String TAG_CHECKPOINT_CREATOR="creator";
 
 
     private int id;

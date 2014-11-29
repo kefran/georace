@@ -18,14 +18,14 @@ public class User  implements ISerializable
                             ,Comparable<User> {
 
     //La valeur des TAG doit être indentique au colonne de la bdd
-    final static String TAG_USER_ID = "id";
-    final static String TAG_USER_LOGIN = "login";
-    final static String TAG_USER_PASSWORD = "password";
-    final static String TAG_USER_FIRSTNAME = "firstname";
-    final static String TAG_USER_LASTNAME = "lastname";
-    final static String TAG_USER_EMAIL = "email";
-    final static String TAG_USER_LATITUDE = "latitude";
-    final static String TAG_USER_LONGITUDE = "longitude";
+    final static public String TAG_USER_ID = "id";
+    final static public String TAG_USER_LOGIN = "login";
+    final static public String TAG_USER_PASSWORD = "password";
+    final static public String TAG_USER_FIRSTNAME = "firstname";
+    final static public String TAG_USER_LASTNAME = "lastname";
+    final static public String TAG_USER_EMAIL = "email";
+    final static public String TAG_USER_LATITUDE = "latitude";
+    final static public String TAG_USER_LONGITUDE = "longitude";
 
 
     private int id=-1;

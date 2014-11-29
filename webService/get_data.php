@@ -47,6 +47,3 @@ if (isset($_POST['user']))
 	die(json_encode(Array("Status"=>"unauthorized")));
 }
 ?>
-
-
-?>

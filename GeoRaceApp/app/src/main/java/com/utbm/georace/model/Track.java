@@ -22,7 +22,7 @@ public class Track implements ISerializable {
 
     private int id;
     private String name;
-    //private Photo photo;
+    //private Photo photo; //TODO in a further future
     private User creator;
 
     public User getCreator() {

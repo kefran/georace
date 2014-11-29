@@ -3,10 +3,14 @@ package com.utbm.georace.tools;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.utbm.georace.model.Checkpoint;
+import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.Race;
 import com.utbm.georace.model.Team;
+import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
 
 import org.apache.http.HttpEntity;
@@ -28,16 +32,19 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by jojo on 03/11/2014.
  */
 //TODO Synchronization check
-//Use only in ASyncTask !
+//The idea was to learn how to use android, so, full implementation of model in java, not in php
+
 public class WebService {
 
     private static WebService instance = null;
@@ -51,6 +58,10 @@ public class WebService {
     private TreeMap<Integer, User> users;//Key = user id Value = User Object
     private TreeMap<Integer, Race> races;//Key = race id Value = Race Object
     private TreeMap<Integer, Team> teams;//Key = teams id Value = Team Object
+    private TreeMap<Integer, Track> tracks;
+
+    private TreeMap<Pair<Integer,Integer>, Participation> participation;
+
 
     private WebService() {
 
@@ -59,6 +70,8 @@ public class WebService {
         httpPost = new HttpPost();
         users = new TreeMap<Integer, User>();
         races = new TreeMap<Integer, Race>();
+        tracks = new TreeMap<Integer, Track>();
+        participation = new TreeMap<Pair<Integer,Integer>, Participation>();
         teams = new TreeMap<Integer, Team>();
 
         userLogged=null;
@@ -173,7 +186,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_data));
+            httpPost.setURI(new URI(Config.Service.service_user));
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("user", "list"));
@@ -213,6 +226,7 @@ public class WebService {
            Log.e("Web Service","User by distance failed, no logged user");
             return null;
         }
+
         users = getUsers();//TODO check synchronisation with server data
         TreeMap<Float,User> userDistance = new TreeMap<Float, User>();//Key Distance with the logged user
 
@@ -228,32 +242,136 @@ public class WebService {
 
         //then the magic occurs , sort the user by distance with the logged one
         for(Map.Entry<Integer,User> u : users.entrySet()){
-
             User bufUser = u.getValue();
             bufLatLng = bufUser.getPosition();
             bufLocation.setLongitude(bufLatLng.longitude);
             bufLocation.setLatitude(bufLatLng.latitude);
-
             userDistance.put(userLoggedLocation.distanceTo(bufLocation),bufUser);
             Log.d("Distance to ", String.valueOf(userLoggedLocation.distanceTo(bufLocation))+"User"+bufUser.getLoginName());
+        }
+
+        return userDistance;
+    }
+
+    public User getUser(Integer id){
+        if(userLogged==null)
+        {
+           Log.e("Web Service","User by id failed, no logged user");
+           return null;
+        }
+        return users.get(id);
+
+    }
+
+
+    public TreeMap<Integer,Checkpoint> getCheckpointsTrack(Integer trackId){
+            TreeMap<Integer,Checkpoint> cpList = new TreeMap<Integer, Checkpoint>();
+
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_checkpoints));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("checkpoint",String.valueOf(trackId)));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray checkpointList = new JSONArray(responseString);
+                int size = checkpointList.length();
+                Checkpoint buf=null;
+                JSONObject jbuf=null;
+
+                for(int i=0;i<size;i++)
+                {
+                    jbuf = checkpointList.getJSONObject(i);
+                    buf= new Checkpoint(
+                            jbuf.getInt(Checkpoint.TAG_CHECKPOINT_ID)
+                            ,jbuf.getString(Checkpoint.TAG_CHECKPOINT_NAME)
+                            ,jbuf.getLong(Checkpoint.TAG_CHECKPOINT_LATITUDE)
+                            ,jbuf.getLong(Checkpoint.TAG_CHECKPOINT_LONGITUDE)
+                            ,getUser(jbuf.getInt(Track.TAG_TRACK_CREATOR))
+                    );
+                    cpList.put(jbuf.getInt(Checkpoint.TAG_CHECKPOINT_ID),buf);
+
+                }
+
+                Log.d("WebService getTrackCheckpoints ", responseString);
+
+            }
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+        }
+
+        return  cpList;
+    }
+
+    public TreeMap<Integer,Track> getTracks(){
+        TreeMap<Integer, Track> trackTreeMap = new TreeMap<Integer, Track>();
+
+        try {
+
+            httpPost.setURI(new URI(Config.Service.service_track));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("track", "list"));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray trackList = new JSONArray(responseString);
+                int size = trackList.length();
+                Track buf=null;
+
+
+                for(int i=0;i<size;i++)
+                {
+                    JSONObject jbuf = trackList.getJSONObject(i);
+
+                    buf =new Track(jbuf.getInt(Track.TAG_TRACK_ID)
+                    ,jbuf.getString(Track.TAG_TRACK_NAME)
+                    ,getCheckpointsTrack(jbuf.getInt(Track.TAG_TRACK_ID)));
+                    trackTreeMap.put(jbuf.getInt(Track.TAG_TRACK_ID),buf);
+                }
+                Log.d("WebService getTracks", responseString);
+            }
+        } catch (Exception e) {
+
+            Log.d("WebService getTracks", "Echec de la récuperation des données depuis le serveur");
+            e.printStackTrace();
 
         }
-        return userDistance;
+        return trackTreeMap;
+
+    }
+
+    public Track getTrack(Integer trackid){
+        if(tracks==null)tracks=getTracks();
+
+        return tracks.get(trackid);
+
+
     }
 
     public TreeMap<Integer,Race> getRaces(){
 
        TreeMap<Integer, Race> raceTreeMap = new TreeMap<Integer, Race>();
+       if(tracks.isEmpty())tracks = getTracks();
+       if(users.isEmpty())users =getUsers();
 
         try {
 
             httpPost.setURI(new URI(Config.Service.service_race));
-
             List<NameValuePair> param = new ArrayList<NameValuePair>();
-            param.add(new BasicNameValuePair("user", "list"));
+            param.add(new BasicNameValuePair("race", "list"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
-
             HttpResponse httpResponse = httpClient.execute(httpPost);
+
+
 
             if (isResponseOk(httpResponse)) {
 
@@ -262,11 +380,20 @@ public class WebService {
                 int size = raceList.length();
                 Race buf=null;
 
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
                 for(int i=0;i<size;i++)
                 {
-                    buf =new Race(raceList.getJSONObject(i));
-                    races.put(buf.getId(),buf);
+
+                    JSONObject jbuf = raceList.getJSONObject(i);
+                    buf =new Race(jbuf.getInt(Race.TAG_RACE_ID)
+                          ,sdf.parse(jbuf.getString(Race.TAG_RACE_START))
+                          ,sdf.parse(jbuf.getString(Race.TAG_RACE_END))
+                          ,getTrack(jbuf.getInt(Race.TAG_RACE_TRACK))
+                          ,getUser(jbuf.getInt(Race.TAG_RACE_ORGANIZER))
+                    );
+
+                    races.put(buf.getId(), buf);
                     raceTreeMap.put(buf.getId(),buf);
                 }
 
@@ -275,8 +402,8 @@ public class WebService {
             }
 
         } catch (Exception e) {
-            Log.d("WebService getRaces", "Echec de la récuperation des données depuis le serveur");
 
+            Log.d("WebService getRaces", "Echec de la récuperation des données depuis le serveur");
             e.printStackTrace();
 
         }
@@ -284,5 +411,65 @@ public class WebService {
 
     }
 
+    public Race getRace(Integer raceid){
+
+        if(races==null)races = getRaces();
+
+        return races.get(raceid);
+    }
+
+    public TreeMap<Pair<Integer,Integer>,Participation>  getParticipation(){
+
+
+        TreeMap<Pair<Integer,Integer>, Participation> participationTreeMap = new TreeMap<Pair<Integer,Integer>, Participation>();
+
+        try {
+
+            httpPost.setURI(new URI(Config.Service.service_participation));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("participation", "1"));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray participationList = new JSONArray(responseString);
+                int size = participationList.length();
+                Participation buf=null;
+
+
+                for(int i=0;i<size;i++)
+                {
+                    JSONObject jbuf = participationList.getJSONObject(i);
+                    buf = new Participation(getUser(jbuf.getInt(Participation.TAG_PARTICIPATION_USER))
+                            ,getRace(jbuf.getInt(Participation.TAG_PARTICIPATION_RACE))
+                            ,sdf.parse(jbuf.getString(Participation.TAG_PARTICIPATION_START))
+                            ,sdf.parse(jbuf.getString(Participation.TAG_PARTICIPATION_END))
+                            ,jbuf.getInt(Participation.TAG_PARTICIPATION_FINISHED)
+                    );
+
+                    participationTreeMap.put(
+                            new Pair<Integer, Integer>(jbuf.getInt(Participation.TAG_PARTICIPATION_USER)
+                            ,jbuf.getInt(Participation.TAG_PARTICIPATION_RACE))
+                            ,buf);
+
+                }
+
+                Log.d("WebService getParticipation", responseString);
+
+            }
+
+        } catch (Exception e) {
+
+            Log.d("WebService getParticipation", "Echec de la récuperation des données depuis le serveur");
+            e.printStackTrace();
+
+        }
+        return participationTreeMap;
+
+
+    }
 
 }
