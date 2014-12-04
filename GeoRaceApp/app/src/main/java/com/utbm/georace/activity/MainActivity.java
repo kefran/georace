@@ -3,6 +3,7 @@ package com.utbm.georace.activity;
 //region Imports
 import android.app.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.v4.widget.DrawerLayout;
@@ -43,16 +44,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        /*
-            Navigation drawer initialisation
-         */
-        mMenuList = getResources().getStringArray(R.array.menu_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.drawer_list_item, mMenuList));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
         /*
             Renplacer ici par les données réelles
             lastRaceListData doit être remplacé par un tableau de participation issue de
@@ -72,45 +63,6 @@ public class MainActivity extends Activity {
         friendsParticipationList.setAdapter(new participationArrayAdapter(this,friendsParticipationListData));
     }
 
-   //region Navigation Drawer
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    /** Swaps fragments in the main content view */
-    private void selectItem(int position) {
-        // Create a new fragment and specify the menu item to show based on position
-        //Fragment fragment = new CourseFragment();
-        //Bundle args = new Bundle();
-        //args.putInt(CourseFragment.ARG_PLANET_NUMBER, position);
-        //fragment.setArguments(args);
-
-        // Insert the fragment by replacing any existing fragment
-       // FragmentManager fragmentManager = getFragmentManager();
-        //fragmentManager.beginTransaction()
-          //      .replace(R.id.content_frame, fragment)
-            //    .commit();
-
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mMenuList[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
-    /*
-        Define the actionbar title
-     */
-    @Override
-    public void setTitle(CharSequence title) {
-       // mTitle = title;
-       // getActionBar().setTitle(mTitle);
-    }
-    //endregion
-
    //region ActionBar
 /*
         Manage the actionbar menu
@@ -126,11 +78,32 @@ public class MainActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case R.id.actionAccueil:
+                //action
+                return true;
+            case R.id.actionRace:
+                Intent intent = new Intent(this, courseTabActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.actionSearchRace:
+                //action
+                return true;
+            case R.id.actionCreateRace:
+                //action
+                return true;
+            case R.id.actionScore:
+                //action
+                return true;
+            case R.id.actionAccount:
+                //action
+                return true;
+            case R.id.actionLogOff:
+                //action
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
     //endregion
 }
