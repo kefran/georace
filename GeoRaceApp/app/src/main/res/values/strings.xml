@@ -14,4 +14,9 @@
     <string name="title_activity_current_race">CurrentRaceActivity</string>
     <string name="title_activity_course_tab">courseTabActivity</string>
 
+    <string name="current_race_tab_map">Carte</string>
+    <string name="current_race_tab_checkpoints">Points</string>
+    <string name="current_race_tab_participants">Participants</string>
+
+
 </resources>
