@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="test_course_list">
+        <item>La course de MachinBidule. Finie en 4h23 le 18/10/2014</item>
+        <item>La course de trucMuche. Finie en 1h40 le 25/10/2014 on rajoute du text pour voir</item>
+        <item>La course de La Toussaint. Finie en 2h12 le 01/11/2014</item>
+    </string-array>
+    <string-array name="test_friends_activity">
+        <item>Geoffrey Dorlac a fini la course de MachinBidule. Finie en 4h23 le 18/10/2014</item>
+        <item>Maxime Mauro a fini la course de trucMuche. Finie en 1h40 le 25/10/2014</item>
+        <item>Colin Michel a fini la course de La Toussaint. Finie en 2h12 le 01/11/2014</item>
+    </string-array>
+</resources>

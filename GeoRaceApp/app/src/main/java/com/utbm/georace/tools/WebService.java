@@ -1,3 +1,14 @@
+/*
+
+ TODO : JOHANNY
+    getMyLastParticipation()
+        return array of Participation
+        scope: lnumber of participations order by date desc from the logged user
+        getFriendsLastParticipation()
+        return array of Participation
+        scope: number of participations order by date desc from all my friends
+ */
+
 package com.utbm.georace.tools;
 
 import android.location.Location;
