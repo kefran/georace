@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -55,12 +56,12 @@ public class WebService {
 
     private User userLogged;
 
-    private TreeMap<Integer, User> users;//Key = user id Value = User Object
-    private TreeMap<Integer, Race> races;//Key = race id Value = Race Object
-    private TreeMap<Integer, Team> teams;//Key = teams id Value = Team Object
-    private TreeMap<Integer, Track> tracks;
+    private TreeSet<User> users;//Key = user id Value = User Object
+    private TreeSet<Race> races;//Key = race id Value = Race Object
+    private TreeSet<Team> teams;//Key = teams id Value = Team Object
+    private TreeSet<Track> tracks;//Key = track id Value = Track Object
 
-    private TreeMap<Pair<Integer,Integer>, Participation> participation;
+    private TreeSet<Participation> participation;//Key = userid value = Participation
 
 
     private WebService() {
@@ -68,11 +69,11 @@ public class WebService {
         httpClient = new DefaultHttpClient();
         httpParams = new BasicHttpParams();
         httpPost = new HttpPost();
-        users = new TreeMap<Integer, User>();
-        races = new TreeMap<Integer, Race>();
-        tracks = new TreeMap<Integer, Track>();
-        participation = new TreeMap<Pair<Integer,Integer>, Participation>();
-        teams = new TreeMap<Integer, Team>();
+        users = new TreeSet< User>();
+        races = new TreeSet< Race>();
+        tracks = new TreeSet< Track>();
+        participation = new TreeSet< Participation>();
+        teams = new TreeSet<Team>();
 
         userLogged=null;
 
@@ -162,7 +163,7 @@ public class WebService {
                     Log.d("JSON TEXT", jsonObject.toString());
                     Log.d("JSON to JAVA object", user.getLoginName());
 
-                    users.put(user.getId(), user);
+                    users.add(user);
                     userLogged = user;
                     return user;
 
@@ -180,9 +181,9 @@ public class WebService {
         return null;
     }
 
-    public TreeMap<Integer, User> getUsers() {
+    public TreeSet< User> getUsers() {
 
-        TreeMap<Integer, User> userTreeMap = new TreeMap<Integer, User>();
+        TreeSet< User> userTree = new TreeSet< User>();
 
         try {
 
@@ -201,12 +202,10 @@ public class WebService {
                 int size = userList.length();
                 User buf=null;
 
-
                 for(int i=0;i<size;i++)
                 {
                     buf =new User(userList.getJSONObject(i));
-                    users.put(buf.getId(),buf);
-                    userTreeMap.put(buf.getId(),buf);
+                    users.add(buf);
                 }
 
                 Log.d("WebService getUsers", responseString);
@@ -216,7 +215,7 @@ public class WebService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return userTreeMap;
+        return users;
     }
 
     public TreeMap<Float,User> getUsersByDistance(){
@@ -227,7 +226,7 @@ public class WebService {
             return null;
         }
 
-        users = getUsers();//TODO check synchronisation with server data
+        users = getUsers();
         TreeMap<Float,User> userDistance = new TreeMap<Float, User>();//Key Distance with the logged user
 
         LatLng userLoggedLatLng = userLogged.getPosition();
@@ -239,10 +238,9 @@ public class WebService {
         userLoggedLocation.setLatitude(userLoggedLatLng.latitude);
         userLoggedLocation.setLongitude(userLoggedLatLng.longitude);
 
-
         //then the magic occurs , sort the user by distance with the logged one
-        for(Map.Entry<Integer,User> u : users.entrySet()){
-            User bufUser = u.getValue();
+        for(User u : users){
+            User bufUser = u;
             bufLatLng = bufUser.getPosition();
             bufLocation.setLongitude(bufLatLng.longitude);
             bufLocation.setLatitude(bufLatLng.latitude);
@@ -259,13 +257,13 @@ public class WebService {
            Log.e("Web Service","User by id failed, no logged user");
            return null;
         }
-        return users.get(id);
+        return users.ceiling(new User(id));
 
     }
 
 
-    public TreeMap<Integer,Checkpoint> getCheckpointsTrack(Integer trackId){
-            TreeMap<Integer,Checkpoint> cpList = new TreeMap<Integer, Checkpoint>();
+    public TreeSet<Checkpoint> getCheckpointsTrack(Integer trackId){
+            TreeSet<Checkpoint> cpList = new TreeSet<Checkpoint>();
 
         try
         {
@@ -293,8 +291,7 @@ public class WebService {
                             ,jbuf.getLong(Checkpoint.TAG_CHECKPOINT_LONGITUDE)
                             ,getUser(jbuf.getInt(Track.TAG_TRACK_CREATOR))
                     );
-                    cpList.put(jbuf.getInt(Checkpoint.TAG_CHECKPOINT_ID),buf);
-
+                    cpList.add(buf);
                 }
 
                 Log.d("WebService getTrackCheckpoints ", responseString);
@@ -309,8 +306,8 @@ public class WebService {
         return  cpList;
     }
 
-    public TreeMap<Integer,Track> getTracks(){
-        TreeMap<Integer, Track> trackTreeMap = new TreeMap<Integer, Track>();
+    public TreeSet<Track> getTracks(){
+        TreeSet<Track> trackTree = new TreeSet<Track>();
 
         try {
 
@@ -326,16 +323,18 @@ public class WebService {
                 JSONArray trackList = new JSONArray(responseString);
                 int size = trackList.length();
                 Track buf=null;
-
+                TreeSet<Checkpoint> checkpointTrack = null;
 
                 for(int i=0;i<size;i++)
                 {
                     JSONObject jbuf = trackList.getJSONObject(i);
+                    checkpointTrack = getCheckpointsTrack(jbuf.getInt(Track.TAG_TRACK_ID));
 
                     buf =new Track(jbuf.getInt(Track.TAG_TRACK_ID)
                     ,jbuf.getString(Track.TAG_TRACK_NAME)
-                    ,getCheckpointsTrack(jbuf.getInt(Track.TAG_TRACK_ID)));
-                    trackTreeMap.put(jbuf.getInt(Track.TAG_TRACK_ID),buf);
+                    ,checkpointTrack);
+
+                    trackTree.add(buf);
                 }
                 Log.d("WebService getTracks", responseString);
             }
@@ -345,19 +344,18 @@ public class WebService {
             e.printStackTrace();
 
         }
-        return trackTreeMap;
+        return trackTree;
 
     }
 
     public Track getTrack(Integer trackid){
-        if(tracks==null)tracks=getTracks();
+        if(tracks.isEmpty())tracks=getTracks();
 
-        return tracks.get(trackid);
-
+        return tracks.ceiling(new Track(trackid));
 
     }
 
-    public TreeMap<Integer,Race> getRaces(){
+    public TreeSet<Race> getRaces(){
 
        TreeMap<Integer, Race> raceTreeMap = new TreeMap<Integer, Race>();
        if(tracks.isEmpty())tracks = getTracks();
@@ -370,8 +368,6 @@ public class WebService {
             param.add(new BasicNameValuePair("race", "list"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
-
-
 
             if (isResponseOk(httpResponse)) {
 
@@ -393,8 +389,8 @@ public class WebService {
                           ,getUser(jbuf.getInt(Race.TAG_RACE_ORGANIZER))
                     );
 
-                    races.put(buf.getId(), buf);
-                    raceTreeMap.put(buf.getId(),buf);
+                    races.add(buf);
+
                 }
 
                 Log.d("WebService getRaces", responseString);
@@ -407,27 +403,29 @@ public class WebService {
             e.printStackTrace();
 
         }
-        return raceTreeMap;
+        return races;
 
     }
 
     public Race getRace(Integer raceid){
 
-        if(races==null)races = getRaces();
+        if(races.isEmpty())races = getRaces();
 
-        return races.get(raceid);
+        return races.ceiling(new Race(raceid));
     }
 
-    public TreeMap<Pair<Integer,Integer>,Participation>  getParticipation(){
+    public TreeSet<Participation>  getParticipationByUser(Integer userId) {
 
+    }
+    public TreeSet<Participation>  getParticipation(){
 
-        TreeMap<Pair<Integer,Integer>, Participation> participationTreeMap = new TreeMap<Pair<Integer,Integer>, Participation>();
+        TreeSet<Participation> participationTree = new TreeSet<Participation>();
 
         try {
 
             httpPost.setURI(new URI(Config.Service.service_participation));
-            List<NameValuePair> param = new ArrayList<NameValuePair>();
-            param.add(new BasicNameValuePair("participation", "1"));
+         //   List<NameValuePair> param = new ArrayList<NameValuePair>();
+         //   param.add(new BasicNameValuePair("participation", String.valueOf(userId)));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
 
@@ -439,21 +437,18 @@ public class WebService {
                 int size = participationList.length();
                 Participation buf=null;
 
-
                 for(int i=0;i<size;i++)
                 {
                     JSONObject jbuf = participationList.getJSONObject(i);
+                    Race race = getRace(jbuf.getInt(Participation.TAG_PARTICIPATION_RACE));
                     buf = new Participation(getUser(jbuf.getInt(Participation.TAG_PARTICIPATION_USER))
-                            ,getRace(jbuf.getInt(Participation.TAG_PARTICIPATION_RACE))
+                            ,race
                             ,sdf.parse(jbuf.getString(Participation.TAG_PARTICIPATION_START))
                             ,sdf.parse(jbuf.getString(Participation.TAG_PARTICIPATION_END))
                             ,jbuf.getInt(Participation.TAG_PARTICIPATION_FINISHED)
                     );
 
-                    participationTreeMap.put(
-                            new Pair<Integer, Integer>(jbuf.getInt(Participation.TAG_PARTICIPATION_USER)
-                            ,jbuf.getInt(Participation.TAG_PARTICIPATION_RACE))
-                            ,buf);
+                    participationTree.add(buf);
 
                 }
 
@@ -467,8 +462,7 @@ public class WebService {
             e.printStackTrace();
 
         }
-        return participationTreeMap;
-
+        return participationTree;
 
     }
 

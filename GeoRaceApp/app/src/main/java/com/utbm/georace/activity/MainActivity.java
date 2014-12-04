@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 public class MainActivity extends Activity implements UserPortrait.OnFragmentInteractionListener{
@@ -136,26 +137,32 @@ public class MainActivity extends Activity implements UserPortrait.OnFragmentInt
      protected Boolean doInBackground(Void... voids) {
         WebService ws = WebService.getInstance();
 
-        TreeMap<Integer,User> users = ws.getUsers();
+        TreeSet<User> users = ws.getUsers();
         ArrayList<User> usersArray = new ArrayList<User>();
 
-        TreeMap<Integer,Checkpoint> cp = ws.getCheckpointsTrack(2);
-        TreeMap<Integer,Track> t = ws.getTracks();
+        TreeSet<Checkpoint> cp = ws.getCheckpointsTrack(2);
+        TreeSet<Track> t = ws.getTracks();
 
-         for(Map.Entry<Integer,Track> e : t.entrySet())
+         for(Track e : t)
          {
-             Track buf = e.getValue();
+             Track buf = e;
              Log.d("Main activity TRACKS", buf.getName());
-             for(Map.Entry<Integer,Checkpoint> f : buf.getCheckpoints().entrySet())
-                Log.d("Main Activity CHECKPOINTS",f.getValue().getName());
+             for(Checkpoint f : buf.getCheckpoints())
+                Log.d("Main Activity CHECKPOINTS",f.getName());
 
          }
 
-         TreeMap<Pair<Integer,Integer>,Participation> part = ws.getParticipation();
+         TreeSet<Participation> part = ws.getParticipationByUser();
 
-         for(Map.Entry<Pair<Integer,Integer>,Participation> e : part.entrySet())
-          Log.d("MAIN ACTIVITY PARTICIPATION",e.getValue().getUser().getFirstName());
+         for(Participation e : part)
+         {
+             Log.d("MAIN ACTIVITY PARTICIPATION", e.getUser().getFirstName());
+            Log.d("MAIN ACTIVITY PARTICIPATION RACE", e.getRace().getTrack().getName());
+            for(Checkpoint c : e.getRace().getTrack().getCheckpoints())
+                Log.d("MAIN ACTIVITY PARTICIPATION RACE", c.getName());
 
+
+         }
          return true;
      }
  }

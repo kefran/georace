@@ -54,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 /**
@@ -338,9 +339,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         User user = new User(1, "jojo", "jojo", "johanny", "strugala", "jojo@patate.fr", 30, 30);
 
 
-        TreeMap<Integer,Checkpoint> checkpoints = new TreeMap<Integer, Checkpoint>();
+        TreeSet<Checkpoint> checkpoints = new TreeSet<Checkpoint>();
         Checkpoint cp = new Checkpoint(1,"Checkpoint 1",10,10,user);
-        checkpoints.put(cp.getId(),cp);
+        checkpoints.add(cp);
         Track track = new Track(1, "piste numbeur ouane",checkpoints);
         try {
 

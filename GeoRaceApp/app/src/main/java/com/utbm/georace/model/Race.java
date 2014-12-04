@@ -15,7 +15,7 @@ import java.util.Date;
  */
 
 
-public class Race implements ISerializable{
+public class Race implements ISerializable, Comparable<Race>{
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static public String TAG_RACE_ID="id";
     final static public String TAG_RACE_START="date_start";
@@ -32,7 +32,10 @@ public class Race implements ISerializable{
     public Race() {
     }
 
-    ;
+
+    public Race(Integer id){
+        this.id=id;
+    }
 
     public Race(int id, Date date_start, Date date_end, Track track, User organizer) {
         this.id = id;
@@ -137,5 +140,18 @@ public class Race implements ISerializable{
         }
 
         return jsonObject;
+    }
+
+    @Override
+    public int compareTo(Race race) {
+        if(race==null)throw new NullPointerException();
+
+        if(id==race.getId())
+            return 0;
+
+        if(id>race.getId())
+            return -1;
+
+        return 1;
     }
 }

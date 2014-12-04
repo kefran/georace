@@ -6,7 +6,7 @@ header ( 'content-type: application/json; charset=utf-8' );
 require_once ('admin/conf.php');
 require_once ('admin/pdo2.php');
 
-$_POST ['checkpoint'] = 2;
+//$_POST ['checkpoint'] = 2;
 
 if ((isset ( $_POST ['checkpoint'] )) && (! empty ( $_POST ['checkpoint'] ))) {
 	$pdo = null;

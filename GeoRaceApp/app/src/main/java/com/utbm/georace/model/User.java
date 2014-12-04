@@ -43,6 +43,9 @@ public class User  implements ISerializable
     public User() {
         id=-1;
     };
+    public User(int i) {
+        id=i;
+    };
 
     public User(int id, String loginName, String password, String firstName, String lastName, String email, double latitude, double longitude) {
         this.id = id;

@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by jojo on 27/11/2014.
  */
-public class Participation implements ISerializable {
+public class Participation implements ISerializable, Comparable<Participation> {
 
     final static public String TAG_PARTICIPATION_USER="user";
     final static public String TAG_PARTICIPATION_RACE ="race";
@@ -83,5 +83,20 @@ public class Participation implements ISerializable {
     @Override
     public boolean fromJson(JSONObject jsonObject) {
         return false;
+    }
+
+    @Override
+    public int compareTo(Participation participation) {
+        if(user==null)throw new NullPointerException();
+
+        int partId =participation.getUser().getId();
+
+        if(partId==user.getId())
+            return 0;
+
+        if(partId>user.getId())
+            return -1;
+
+        return 1;
     }
 }

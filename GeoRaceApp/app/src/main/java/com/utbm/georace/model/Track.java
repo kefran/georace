@@ -8,11 +8,12 @@ import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Created by jojo on 22/10/2014.
  */
-public class Track implements ISerializable {
+public class Track implements ISerializable, Comparable<Track> {
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static public String TAG_TRACK_ID = "id";
     final static public String TAG_TRACK_NAME = "name";
@@ -33,15 +34,18 @@ public class Track implements ISerializable {
         this.creator = creator;
     }
 
-    private TreeMap<Integer, Checkpoint> checkpoints;
+    private TreeSet<Checkpoint> checkpoints;
 
+    public Track(Integer id){
+        this.id=id;
+    }
 
     public Track() {
     }
 
     ;
 
-    public Track(int id, String name, TreeMap<Integer, Checkpoint> checkpoints) {
+    public Track(int id, String name, TreeSet<Checkpoint> checkpoints) {
         this.id = id;
         this.name = name;
         this.checkpoints = checkpoints;
@@ -51,7 +55,7 @@ public class Track implements ISerializable {
         try
         {
 
-            checkpoints = new TreeMap<Integer, Checkpoint>();
+            checkpoints = new TreeSet<Checkpoint>();
             Checkpoint buf = null;
 
             name = json.getString(TAG_TRACK_NAME);
@@ -63,7 +67,7 @@ public class Track implements ISerializable {
             {
 
                 buf = new Checkpoint(jsonArray.getJSONObject(i));
-                checkpoints.put(buf.getId(), buf);
+                checkpoints.add(buf);
             }
 
 
@@ -99,9 +103,9 @@ public class Track implements ISerializable {
             jsonObject.put(TAG_TRACK_ID, id);
             jsonObject.put(TAG_TRACK_NAME, name);
 
-            for (Map.Entry<Integer, Checkpoint> e : checkpoints.entrySet())
+            for (Checkpoint e : checkpoints)
             {
-                jsonArray.put(e.getValue().toJson());
+                jsonArray.put(e.toJson());
             }
             jsonObject.put(TAG_TRACK_CHECKPOINT, jsonArray);
 
@@ -113,18 +117,18 @@ public class Track implements ISerializable {
         return jsonObject;
     }
 
-    public TreeMap<Integer, Checkpoint> getCheckpoints() {
+    public TreeSet<Checkpoint> getCheckpoints() {
         return checkpoints;
     }
 
-    public void setCheckpoints(TreeMap<Integer, Checkpoint> checkpoints) {
+    public void setCheckpoints(TreeSet<Checkpoint> checkpoints) {
         this.checkpoints = checkpoints;
     }
 
     @Override
     public boolean fromJson(JSONObject jsonObject) {
 
-        TreeMap<Integer, Checkpoint> treeBuf = new TreeMap<Integer, Checkpoint>();
+        TreeSet<Checkpoint> treeBuf = new TreeSet<Checkpoint>();
         Checkpoint buf=null;
         int size ;
 
@@ -141,7 +145,7 @@ public class Track implements ISerializable {
             for (int i = 0; i < size; i++)
             {
                 buf = new Checkpoint(jsonArray.getJSONObject(i));
-                treeBuf.put(buf.getId(), buf);
+                treeBuf.add( buf);
             }
             this.setCheckpoints(treeBuf);
 
@@ -153,5 +157,18 @@ public class Track implements ISerializable {
         }
 
         return true;
+    }
+
+    @Override
+    public int compareTo(Track track) {
+        if(track==null)throw new NullPointerException();
+
+        if(id==track.getId())
+            return 0;
+
+        if(id>track.getId())
+            return -1;
+
+        return 1;
     }
 }

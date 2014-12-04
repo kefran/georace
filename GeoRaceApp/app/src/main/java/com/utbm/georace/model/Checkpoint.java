@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Created by jojo on 29/10/2014.
  */
-public class Checkpoint implements ISerializable {
+public class Checkpoint implements ISerializable, Comparable<Checkpoint> {
 
     //La valeur des TAG doit être indentique au colonne de la bdd
     final static public String TAG_CHECKPOINT_ID ="id";
@@ -127,5 +127,18 @@ public class Checkpoint implements ISerializable {
 
 
         return true;
+    }
+
+    @Override
+    public int compareTo(Checkpoint checkpoint) {
+        if(checkpoint==null)throw new NullPointerException();
+
+        if(id==checkpoint.getId())
+            return 0;
+
+        if(id>checkpoint.getId())
+            return -1;
+
+        return 1;
     }
 }
