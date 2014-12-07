@@ -7,6 +7,7 @@ import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,7 +24,7 @@ import com.utbm.georace.fragment.RaceMap;
 import com.utbm.georace.fragment.UserPortrait;
 
 
-public class courseTabActivity extends FragmentActivity implements ActionBar.TabListener, RaceMap.OnFragmentInteractionListener {
+public class courseTabActivity extends FragmentActivity implements ActionBar.TabListener, RaceMap.OnFragmentInteractionListener, CheckpointList.OnFragmentInteractionListener, ParticipantsList.OnFragmentInteractionListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -31,6 +32,9 @@ public class courseTabActivity extends FragmentActivity implements ActionBar.Tab
      */
 
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+    public  RaceMap fragmentRaceMap;
+    public CheckpointList fragmentCheckpointList;
+    public ParticipantsList fragmentParticipantsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,13 @@ public class courseTabActivity extends FragmentActivity implements ActionBar.Tab
          /*
         TODO: changer ça par une sequence déjà stocké dans un fichier plus structurée
          */
+
+
+        fragmentRaceMap = new RaceMap();
+        fragmentCheckpointList = new CheckpointList();
+        fragmentParticipantsList = new ParticipantsList();
+
+        //final ActionBar bar = getActionBar();
 
         actionBar.addTab(actionBar.newTab().setText(R.string.current_race_tab_map)
                 .setTabListener(this));
@@ -81,24 +92,28 @@ public class courseTabActivity extends FragmentActivity implements ActionBar.Tab
         // When the given tab is selected, show the tab contents in the
         // container view.
 
-        /*
+        /*llu
         TODO: changer ça  http://stackoverflow.com/questions/7958458/actionbar-3-tabs-and-3-fragments-this-is-killing-me
          */
+        Log.e("TAB SELECTOR : ", tab.getText().toString());
         int tabId = tab.getPosition();
         Fragment fragment;
+
         switch (tabId) {
             case 0:
-                fragment  = new RaceMap();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, fragmentRaceMap).commit();
             case 1:
-                fragment  = new CheckpointList();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, fragmentCheckpointList).commit();
             case 2:
-                fragment  = new ParticipantsList();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, fragmentParticipantsList).commit();
             default:
-                fragment  = new RaceMap();
-                //action
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, fragmentRaceMap).commit();
         }
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment).commit();
+
     }
 
     @Override
@@ -116,4 +131,28 @@ public class courseTabActivity extends FragmentActivity implements ActionBar.Tab
     public void onFragmentInteraction(Uri uri) {
 
     }
+/*
+    class MyTabsEListener implements ActionBar.TabListener {
+        public Fragment fragment;
+
+        public void MyTabsListener(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            //do what you want when tab is reselected, I do nothing
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            ft.replace(R.id.container, fragment);
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            ft.remove(fragment);
+        }
+    }
+    */
 }
