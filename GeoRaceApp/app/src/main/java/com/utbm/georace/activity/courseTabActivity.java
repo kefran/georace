@@ -7,29 +7,15 @@ import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.internal.de;
 import com.utbm.georace.R;
 import com.utbm.georace.fragment.CheckpointList;
 import com.utbm.georace.fragment.ParticipantsList;
 import com.utbm.georace.fragment.RaceMap;
-import com.utbm.georace.fragment.UserPortrait;
 
-
-public class courseTabActivity extends FragmentActivity implements ActionBar.TabListener, RaceMap.OnFragmentInteractionListener, CheckpointList.OnFragmentInteractionListener, ParticipantsList.OnFragmentInteractionListener {
-
-    /**
-     * The serialization (saved instance state) Bundle key representing the
-     * current tab position.
-     */
+public class courseTabActivity extends FragmentActivity implements RaceMap.OnFragmentInteractionListener, CheckpointList.OnFragmentInteractionListener, ParticipantsList.OnFragmentInteractionListener {
 
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     public  RaceMap fragmentRaceMap;
@@ -41,31 +27,25 @@ public class courseTabActivity extends FragmentActivity implements ActionBar.Tab
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_tab);
 
-        // Set up the action bar to show tabs.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        // for each of the sections in the app, add a tab to the action bar.
-
-         /*
-        TODO: changer ça par une sequence déjà stocké dans un fichier plus structurée
+        /*
+            Navigation par onglets
          */
+        final ActionBar bar = getActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setDisplayOptions(0,ActionBar.DISPLAY_SHOW_TITLE);
 
-
-        fragmentRaceMap = new RaceMap();
-        fragmentCheckpointList = new CheckpointList();
-        fragmentParticipantsList = new ParticipantsList();
-
-        //final ActionBar bar = getActionBar();
-
-        actionBar.addTab(actionBar.newTab().setText(R.string.current_race_tab_map)
-                .setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText(R.string.current_race_tab_checkpoints)
-                .setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText(R.string.current_race_tab_participants)
-                .setTabListener(this));
+        bar.addTab(bar.newTab()
+                .setText(R.string.current_race_tab_map)
+                .setTabListener(new TabListener<RaceMap>(this,"RaceMap",RaceMap.class)));
+        bar.addTab(bar.newTab()
+                .setText(R.string.current_race_tab_checkpoints)
+                .setTabListener(new TabListener<CheckpointList>(this,"CheckpointList",CheckpointList.class)));
+        bar.addTab(bar.newTab()
+                .setText(R.string.current_race_tab_participants)
+                .setTabListener(new TabListener<ParticipantsList>(this,"ParticipantsList",ParticipantsList.class)));
     }
 
+    //region Gestion fragment
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore the previously serialized current tab position.
@@ -87,72 +67,62 @@ public class courseTabActivity extends FragmentActivity implements ActionBar.Tab
         return true;
     }
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab,FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, show the tab contents in the
-        // container view.
-
-        /*llu
-        TODO: changer ça  http://stackoverflow.com/questions/7958458/actionbar-3-tabs-and-3-fragments-this-is-killing-me
-         */
-        Log.e("TAB SELECTOR : ", tab.getText().toString());
-        int tabId = tab.getPosition();
-        Fragment fragment;
-
-        switch (tabId) {
-            case 0:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragmentRaceMap).commit();
-            case 1:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragmentCheckpointList).commit();
-            case 2:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragmentParticipantsList).commit();
-            default:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragmentRaceMap).commit();
-        }
-
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab,
-                                FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab,
-                                FragmentTransaction fragmentTransaction) {
-    }
-
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
-/*
-    class MyTabsEListener implements ActionBar.TabListener {
-        public Fragment fragment;
+    //endregion
 
-        public void MyTabsListener(Fragment fragment) {
-            this.fragment = fragment;
+    //region   Tablistener custom pour la navigation par onglets
+
+    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
+        private final Activity mActivity;
+        private final String mTag;
+        private final Class<T> mClass;
+        private final Bundle mArgs;
+        private Fragment mFragment;
+
+        public TabListener(Activity activity, String tag, Class<T> clz) {
+            this(activity, tag, clz, null);
         }
 
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            //do what you want when tab is reselected, I do nothing
+        public TabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
+            mActivity = activity;
+            mTag = tag;
+            mClass = clz;
+            mArgs = args;
+
+            // Check to see if we already have a fragment for this tab, probably
+            // from a previously saved state.  If so, deactivate it, because our
+            // initial state is that a tab isn't shown.
+            mFragment = mActivity.getFragmentManager().findFragmentByTag(mTag);
+            if (mFragment != null && !mFragment.isDetached()) {
+                FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
+                ft.hide(mFragment);
+                ft.commit();
+            }
         }
 
-        @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.replace(R.id.container, fragment);
+            if (mFragment == null) {
+                mFragment = Fragment.instantiate(mActivity, mClass.getName(), mArgs);
+                ft.add(android.R.id.content, mFragment, mTag);
+            } else {
+                ft.show(mFragment);
+            }
         }
 
-        @Override
         public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.remove(fragment);
+            if (mFragment != null) {
+                ft.hide(mFragment);
+            }
         }
+
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
+        }
+
     }
-    */
+    //endregion
 }
