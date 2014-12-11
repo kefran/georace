@@ -4,6 +4,7 @@ package com.utbm.georace.activity;
 import android.app.Activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.v4.widget.DrawerLayout;
@@ -17,7 +18,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.utbm.georace.R;
-import com.utbm.georace.adapter.participationArrayAdapter;
+import com.utbm.georace.adapter.ParticipationAdapter;
+import com.utbm.georace.model.Participation;
+import com.utbm.georace.tools.WebService;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 //endregion
 
 public class MainActivity extends Activity {
@@ -35,6 +43,8 @@ public class MainActivity extends Activity {
     private ListView friendsParticipationList;
     private String[] friendsParticipationListData;
 
+    private BuildMainPageTask builder;
+
     //endregion
 
     /*
@@ -51,7 +61,7 @@ public class MainActivity extends Activity {
          */
         lastParticipationListData = getResources().getStringArray(R.array.test_course_list);
         lastParticipationList = (ListView) findViewById(R.id.listLastRace);
-        lastParticipationList.setAdapter(new participationArrayAdapter(this,lastParticipationListData));
+
 
           /*
             Renplacer ici par les données réelles
@@ -60,7 +70,10 @@ public class MainActivity extends Activity {
          */
         friendsParticipationListData = getResources().getStringArray(R.array.test_friends_activity);
         friendsParticipationList = (ListView) findViewById(R.id.listFriends);
-        friendsParticipationList.setAdapter(new participationArrayAdapter(this,friendsParticipationListData));
+//        friendsParticipationList.setAdapter(new ParticipationAdapter(this,friendsParticipationListData));
+
+       builder = new BuildMainPageTask();
+        builder.execute();
     }
 
    //region ActionBar
@@ -78,7 +91,8 @@ public class MainActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()){
+        switch (item.getItemId())
+        {
             case R.id.actionAccueil:
                 //action
                 return true;
@@ -105,5 +119,28 @@ public class MainActivity extends Activity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    //endregion
+ class BuildMainPageTask extends AsyncTask<Void,Void,Boolean> {
+
+
+     TreeSet<Participation> participations;
+
+     @Override
+     protected Boolean doInBackground(Void... voids) {
+        WebService ws = WebService.getInstance();
+
+        participations = ws.getParticipation();
+
+         return true;
+    }
+
+     @Override
+     protected void onPostExecute(Boolean aBoolean) {
+         super.onPostExecute(aBoolean);
+
+         lastParticipationList.setAdapter(new ParticipationAdapter(getApplicationContext(),participations));
+
+     }
+ }
+
+
 }

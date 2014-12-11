@@ -7,22 +7,31 @@ header('content-type: application/json; charset=utf-8');
 require_once('admin/conf.php');
 require_once('admin/pdo2.php');
 
+$_POST['friendship']=1;
 
-
-if ((isset($_POST['helloworld'])) && (!empty($_POST['helloworld'])))
+if ((isset($_POST['friendship'])))
 {
 	$pdo =null;
 	try {
 		$pdo = PDO2::getInstance();
-		$select = $pdo->prepare(";");
-		$select->bindParam(':userPassword',$pwd ,PDO::PARAM_STR);
+		$select = $pdo->prepare("
+			SELECT 
+				f.user
+				,f.friend
+				,f.date
+			FROM 
+				friendship f
+			WHERE 
+				f.user = :user
+				;");
+		$select->bindParam(":user",$_POST['friendship']);
 		$select->execute();
 
-		if ($select->rowCount()!=1){
-			die(json_encode(Array("Status"=>"unauthorized")));
+		if ($select->rowCount()<=0){
+			die(json_encode(Array("Status"=>"empty")));
 		}
 		else{
-			$data=$select->fetch(PDO::FETCH_ASSOC);
+			$data=$select->fetchAll(PDO::FETCH_ASSOC);
 			die(json_encode($data));
 		}
 

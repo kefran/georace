@@ -12,9 +12,7 @@
 package com.utbm.georace.tools;
 
 import android.location.Location;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.utbm.georace.model.Checkpoint;
@@ -29,7 +27,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -42,14 +39,12 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
+
 
 /**
  * Created by jojo on 03/11/2014.
@@ -192,6 +187,15 @@ public class WebService {
         return null;
     }
 
+    public  TreeSet<User> getFriends(){
+        if(userLogged==null){
+            Log.e("Web Service","User by distance failed, no logged user");
+            return null;
+        }
+
+
+        return null;
+    };
     public TreeSet< User> getUsers() {
 
         TreeSet< User> userTree = new TreeSet< User>();
@@ -230,7 +234,6 @@ public class WebService {
     }
 
     public TreeMap<Float,User> getUsersByDistance(){
-
 
         if(userLogged==null){
            Log.e("Web Service","User by distance failed, no logged user");
@@ -401,7 +404,6 @@ public class WebService {
                     );
 
                     races.add(buf);
-
                 }
 
                 Log.d("WebService getRaces", responseString);
@@ -463,18 +465,13 @@ public class WebService {
                     );
 
                     participationTree.add(buf);
-
                 }
-
                 Log.d("WebService getParticipation", responseString);
-
             }
-
         } catch (Exception e) {
 
             Log.d("WebService getParticipation", "Echec de la récuperation des données depuis le serveur");
             e.printStackTrace();
-
         }
         return participationTree;
 
