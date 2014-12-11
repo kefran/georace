@@ -34,6 +34,10 @@ public class Participation implements ISerializable, Comparable<Participation> {
         this.finished=finished;
     }
 
+    public Participation(User user){
+        this.user=user;
+    }
+
     public int getFinished() {
         return finished;
     }

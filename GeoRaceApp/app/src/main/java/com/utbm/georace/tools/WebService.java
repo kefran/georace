@@ -425,7 +425,10 @@ public class WebService {
         return races.ceiling(new Race(raceid));
     }
 
-    public TreeSet<Participation>  getParticipationByUser(Integer userId) {
+    public TreeSet<Participation>  getParticipationByUser(Integer userId){
+        if(participation.isEmpty())participation= getParticipation();
+
+            return null;
 
     }
     public TreeSet<Participation>  getParticipation(){
@@ -435,8 +438,8 @@ public class WebService {
         try {
 
             httpPost.setURI(new URI(Config.Service.service_participation));
-         //   List<NameValuePair> param = new ArrayList<NameValuePair>();
-         //   param.add(new BasicNameValuePair("participation", String.valueOf(userId)));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("participation", "*"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
 
