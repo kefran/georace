@@ -7,7 +7,6 @@ header('content-type: application/json; charset=utf-8');
 require_once('admin/conf.php');
 require_once('admin/pdo2.php');
 
-$_POST['friendship']=1;
 
 if ((isset($_POST['friendship'])))
 {
@@ -22,9 +21,9 @@ if ((isset($_POST['friendship'])))
 			FROM 
 				friendship f
 			WHERE 
-				f.user = :user
+				f.user = ?
 				;");
-		$select->bindParam(":user",$_POST['friendship']);
+		$select->bindParam(1,$_POST['friendship']);
 		$select->execute();
 
 		if ($select->rowCount()<=0){

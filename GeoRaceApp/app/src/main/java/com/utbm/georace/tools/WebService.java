@@ -61,13 +61,14 @@ public class WebService {
     private HttpPost httpPost;
 
     private User userLogged;
+    private TreeSet<User> users;
+    private TreeSet<Race> races;
+    private TreeSet<Team> teams;
+    private TreeSet<Track> tracks;
 
-    private TreeSet<User> users;//Key = user id Value = User Object
-    private TreeSet<Race> races;//Key = race id Value = Race Object
-    private TreeSet<Team> teams;//Key = teams id Value = Team Object
-    private TreeSet<Track> tracks;//Key = track id Value = Track Object
+    private TreeSet<User> userLoggedFriends;
 
-    private TreeSet<Participation> participation;//Key = userid value = Participation
+    private TreeSet<Participation> participations;
 
 
     private WebService() {
@@ -78,7 +79,8 @@ public class WebService {
         users = new TreeSet< User>();
         races = new TreeSet< Race>();
         tracks = new TreeSet< Track>();
-        participation = new TreeSet< Participation>();
+        participations = new TreeSet< Participation>();
+        userLoggedFriends = new TreeSet<User>();
         teams = new TreeSet<Team>();
 
         userLogged=null;
@@ -120,7 +122,6 @@ public class WebService {
         return true;
     }
 
-
     private String getStringFromResponse(HttpResponse response) {
         HttpEntity httpEntity = response.getEntity();
 
@@ -137,7 +138,6 @@ public class WebService {
         return null;
 
     }
-
 
     //Interroge le webservice,
     // Si l'utilisateur est autorisé la fonction retourne l'obj User autorisé,
@@ -157,7 +157,6 @@ public class WebService {
             httpPost.setEntity(new UrlEncodedFormEntity(param));
             HttpResponse response = httpClient.execute(httpPost);
 
-
             if (isResponseOk(response)) {
 
                 String respString = getStringFromResponse(response);
@@ -169,7 +168,6 @@ public class WebService {
                     Log.d("JSON TEXT", jsonObject.toString());
                     Log.d("JSON to JAVA object", user.getLoginName());
 
-                    users.add(user);
                     userLogged = user;
                     return user;
 
@@ -193,9 +191,40 @@ public class WebService {
             return null;
         }
 
+        try {
 
-        return null;
+            httpPost.setURI(new URI(Config.Service.service_friendship));
+
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("friendship", String.valueOf(userLogged.getId())));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));
+
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray userList = new JSONArray(responseString);
+                int size = userList.length();
+                User buf=null;
+
+                for(int i=0;i<size;i++)
+                {
+                    buf =getUser(userList.getJSONObject(i).getInt("friend"));
+                    Log.e("COPAIN SERVICE" ,String.valueOf(userList.getJSONObject(i).getInt("friend")));
+                    userLoggedFriends.add(buf);
+                }
+
+                Log.d("WebService getUsers", responseString);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return userLoggedFriends;
     };
+
     public TreeSet< User> getUsers() {
 
         TreeSet< User> userTree = new TreeSet< User>();
@@ -240,7 +269,8 @@ public class WebService {
             return null;
         }
 
-        users = getUsers();
+        if(users.isEmpty())getUsers();
+
         TreeMap<Float,User> userDistance = new TreeMap<Float, User>();//Key Distance with the logged user
 
         LatLng userLoggedLatLng = userLogged.getPosition();
@@ -271,10 +301,15 @@ public class WebService {
            Log.e("Web Service","User by id failed, no logged user");
            return null;
         }
-        return users.ceiling(new User(id));
+
+        if(users.isEmpty())getUsers();
+
+        for(User u : users)
+            if(u.getId()==id)return u;
+
+        return null;
 
     }
-
 
     public TreeSet<Checkpoint> getCheckpointsTrack(Integer trackId){
             TreeSet<Checkpoint> cpList = new TreeSet<Checkpoint>();
@@ -427,15 +462,27 @@ public class WebService {
         return races.ceiling(new Race(raceid));
     }
 
-    public TreeSet<Participation>  getParticipationByUser(Integer userId){
-        if(participation.isEmpty())participation= getParticipation();
 
-            return null;
+    public TreeSet<Participation>  getUserParticipation(){
+        TreeSet<Participation> upart = new TreeSet<Participation>();
+
+        if(participations.isEmpty())getParticipations();
+
+        for(Participation p : participations)
+            if(userLogged.getId()==p.getUser().getId())upart.add(p);
+
+        return upart;
 
     }
-    public TreeSet<Participation>  getParticipation(){
 
-        TreeSet<Participation> participationTree = new TreeSet<Participation>();
+
+    public TreeSet<Participation>  getUserParticipationByUser(Integer userId){
+        if(participations.isEmpty())participations= getParticipations();
+
+            return null;
+    }
+
+    public TreeSet<Participation>  getParticipations(){
 
         try {
 
@@ -464,7 +511,7 @@ public class WebService {
                             ,jbuf.getInt(Participation.TAG_PARTICIPATION_FINISHED)
                     );
 
-                    participationTree.add(buf);
+                    participations.add(buf);
                 }
                 Log.d("WebService getParticipation", responseString);
             }
@@ -473,8 +520,22 @@ public class WebService {
             Log.d("WebService getParticipation", "Echec de la récuperation des données depuis le serveur");
             e.printStackTrace();
         }
-        return participationTree;
-
+        return participations;
     }
+
+    public TreeSet<Participation> getFriendParticipation(){
+
+        TreeSet<Participation> friendParticipation = new TreeSet<Participation>();
+
+        if(userLoggedFriends.isEmpty())getFriends();
+        if(participations.isEmpty())getParticipations();
+
+      for(User u :userLoggedFriends)
+          for(Participation p :participations)
+              if(u.getId()==p.getUser().getId())friendParticipation.add(p);
+
+        return friendParticipation;
+    }
+
 
 }
