@@ -24,6 +24,7 @@ import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -132,6 +133,8 @@ public class MainActivity extends Activity {
      protected Boolean doInBackground(Void... voids) {
         WebService ws = WebService.getInstance();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         participations = ws.getUserParticipation();
         friendsParticipations = ws.getFriendParticipation();
         friends = ws.getFriends();
@@ -140,8 +143,8 @@ public class MainActivity extends Activity {
              Log.d("MAIN COPAIN",u.getFirstName());
          }
 
+
          Log.e("checkpoint name",participations.first().getRace().getTrack().getCheckpoints().first().getName());
-         ws.setCheckpoint(participations.first().getRace().getTrack().getCheckpoints().first());
 
          return true;
     }
@@ -151,7 +154,8 @@ public class MainActivity extends Activity {
          super.onPostExecute(aBoolean);
 
          lastParticipationList.setAdapter(new ParticipationAdapter(getApplicationContext(),participations));
-         friendsParticipationList.setAdapter(new ParticipationAdapter(getApplicationContext(),friendsParticipations));
+
+
 
      }
  }

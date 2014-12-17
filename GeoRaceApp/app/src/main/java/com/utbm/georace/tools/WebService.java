@@ -424,6 +424,7 @@ public class WebService {
             if (isResponseOk(httpResponse)) {
 
                 String responseString = getStringFromResponse(httpResponse);
+
                 JSONArray raceList = new JSONArray(responseString);
                 int size = raceList.length();
                 Race buf=null;
@@ -471,16 +472,12 @@ public class WebService {
         if(participations.isEmpty())getParticipations();
 
         for(Participation p : participations)
+        {
+            Log.e("WEBSERVICE GETUSERPARTICIPATION",String.valueOf(p.getUser().getId()));
             if(userLogged.getId()==p.getUser().getId())upart.add(p);
+        }
 
         return upart;
-
-    }
-
-    public TreeSet<Participation>  getUserParticipationByUser(Integer userId){
-        if(participations.isEmpty())participations= getParticipations();
-
-            return null;
     }
 
     public TreeSet<Participation>  getParticipations(){
@@ -497,6 +494,7 @@ public class WebService {
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
                 String responseString = getStringFromResponse(httpResponse);
+
                 JSONArray participationList = new JSONArray(responseString);
                 int size = participationList.length();
                 Participation buf=null;
@@ -577,4 +575,45 @@ public class WebService {
         return true;
     }
 
+
+    public boolean setParticipation(Participation p){
+
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_set_participation));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            param.add(new BasicNameValuePair("participation","1"));
+            param.add(new BasicNameValuePair("user",String.valueOf(p.getUser().getId())));
+            param.add(new BasicNameValuePair("race",String.valueOf(p.getRace().getId())));
+            param.add(new BasicNameValuePair("start",sdf.format(p.getStart())));
+            param.add(new BasicNameValuePair("end",sdf.format(p.getEnd())));
+            param.add(new BasicNameValuePair("finished", String.valueOf(p.getFinished())));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if(isResponseOk(httpResponse))
+            {
+                String responseString = getStringFromResponse(httpResponse);
+                Log.d("WEBSERVICE SET PARTICIPATION",responseString);
+                JSONObject jso = new JSONObject(responseString);
+
+                if(jso.getString("Status").compareTo("Ok")!=0)
+                    return false;
+
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public User getUserLogged() {
+        return userLogged;
+    }
 }

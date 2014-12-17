@@ -18,13 +18,10 @@ if ((isset($_POST['helloworld'])) && (!empty($_POST['helloworld'])))
 		$select->bindParam(':userPassword',$pwd ,PDO::PARAM_STR);
 		$select->execute();
 
-		if ($select->rowCount()!=1){
-			die(json_encode(Array("Status"=>"unauthorized")));
-		}
-		else{
+		
 			$data=$select->fetch(PDO::FETCH_ASSOC);
 			die(json_encode($data));
-		}
+		
 
 	}
 	catch (Exception $e) {
