@@ -7,16 +7,29 @@ import org.json.JSONObject;
 /**
  * Created by jojo on 29/10/2014.
  */
-public class Photo implements ISerializable {
+public class Photo {
 
 
-    @Override
-    public JSONObject toJson() {
-        return null;
+    final static public String TAG_PHOTO_ID="id";
+
+
+
+    private int id;
+
+
+    public Photo(int id) {
+        this.id = id;
     }
 
-    @Override
-    public boolean fromJson(JSONObject jsonObject) {
-        return true;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public static String getTagPhotoId() {
+        return TAG_PHOTO_ID;
     }
 }

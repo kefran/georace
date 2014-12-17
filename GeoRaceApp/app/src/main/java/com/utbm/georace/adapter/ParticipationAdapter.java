@@ -20,6 +20,7 @@ import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.Track;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -27,11 +28,12 @@ public class ParticipationAdapter extends BaseAdapter {
 
     private final LayoutInflater mInflater;
     private final TreeSet<Participation> values;
-
+    private final SimpleDateFormat sdf;
 
     public ParticipationAdapter(Context c,TreeSet<Participation> v){
         mInflater = LayoutInflater.from(c);
         values =v;
+        sdf= new SimpleDateFormat("dd-MM-yyyy");
     }
 
     @Override
@@ -81,7 +83,8 @@ public class ParticipationAdapter extends BaseAdapter {
         }
 
         holder.tvInfoRace.setText(getItem(i).getRace().getTrack().getName());
-        holder.tvNameRace.setText(getItem(i).getRace().getTrack().getName());
+
+        holder.tvNameRace.setText("course du "+sdf.format(getItem(i).getStart()));
 
         return view;
     }

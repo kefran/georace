@@ -7,30 +7,49 @@ public class Config {
 
     public class Url {
         //URL to the server
-        public final static String url_server = "http://192.168.0.11/georace/"; //with terminal "/"
+        public final static String url_server = "http://172.23.50.99/georace/"; //with terminal "/"
 
         //URL to the different webservice
-        public final static String url_login = "get_login.php";
-        public final static String url_user = "get_user.php";
-        public final static String url_team = "get_team.php";
-        public final static String url_friend = "get_friendship.php";
-        public final static String url_race = "get_race.php";
-        public final static String url_data = "get_data.php";
-        public final static String url_track = "get_track.php";
-        public final static String url_participation = "get_participation.php";
-        public final static String url_checkpoint = "get_checkpoint.php";
+        public final static String url_get_login = "get_login.php";
+        public final static String url_get_user = "get_user.php";
+        public final static String url_get_team = "get_team.php";
+        public final static String url_get_friend = "get_friendship.php";
+        public final static String url_get_race = "get_race.php";
+        public final static String url_get_data = "get_data.php";
+        public final static String url_get_track = "get_track.php";
+        public final static String url_get_participation = "get_participation.php";
+        public final static String url_get_checkpoint = "get_checkpoint.php";
 
+
+        public final static String url_set_login = "set_login.php";
+        public final static String url_set_user = "set_user.php";
+        public final static String url_set_team = "set_team.php";
+        public final static String url_set_friend = "set_friendship.php";
+        public final static String url_set_race = "set_race.php";
+        public final static String url_set_data = "set_data.php";
+        public final static String url_set_track = "set_track.php";
+        public final static String url_set_participation = "set_participation.php";
+        public final static String url_set_checkpoint = "set_checkpoint.php";
     }
 
     public class Service{
 
-        public final static String service_login = Url.url_server+Url.url_login;
-        public final static String service_user = Url.url_server+Url.url_user;
-        public final static String service_race = Url.url_server+Url.url_race;
-        public final static String service_participation = Url.url_server+Url.url_participation;
-        public final static String service_track = Url.url_server+Url.url_track;
-        public final static String service_checkpoints = Url.url_server+Url.url_checkpoint;
-        public final static String service_friendship = Url.url_server+Url.url_friend;
+        public final static String service_get_login = Url.url_server+Url.url_get_login;
+        public final static String service_get_user = Url.url_server+Url.url_get_user;
+        public final static String service_get_race = Url.url_server+Url.url_get_race;
+        public final static String service_get_participation = Url.url_server+Url.url_get_participation;
+        public final static String service_get_track = Url.url_server+Url.url_get_track;
+        public final static String service_get_checkpoints = Url.url_server+Url.url_get_checkpoint;
+        public final static String service_get_friendship = Url.url_server+Url.url_get_friend;
+
+        public final static String service_set_login = Url.url_server+Url.url_set_login;
+        public final static String service_set_user = Url.url_server+Url.url_set_user;
+        public final static String service_set_race = Url.url_server+Url.url_set_race;
+        public final static String service_set_participation = Url.url_server+Url.url_set_participation;
+        public final static String service_set_track = Url.url_server+Url.url_set_track;
+        public final static String service_set_checkpoints = Url.url_server+Url.url_set_checkpoint;
+        public final static String service_set_friendship = Url.url_server+Url.url_set_friend;
+
 
 
     }

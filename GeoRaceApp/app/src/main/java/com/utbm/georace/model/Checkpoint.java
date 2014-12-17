@@ -21,6 +21,7 @@ public class Checkpoint implements ISerializable, Comparable<Checkpoint> {
     private String name;
     private double latitude;
     private double longitude;
+    private Photo photo;
 
     public Checkpoint(int id, String name, double latitude, double longitude, User creator) {
         this.id = id;
@@ -28,6 +29,7 @@ public class Checkpoint implements ISerializable, Comparable<Checkpoint> {
         this.latitude = latitude;
         this.longitude = longitude;
         this.creator = creator;
+        this.photo = new Photo(1);
     }
 
     private User creator;
@@ -72,6 +74,7 @@ public class Checkpoint implements ISerializable, Comparable<Checkpoint> {
     public void setCreator(User creator) {
         this.creator = creator;
     }
+
     Checkpoint(JSONObject jsonObject){
 
         try{
@@ -88,6 +91,13 @@ public class Checkpoint implements ISerializable, Comparable<Checkpoint> {
 
     }
 
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
+    }
 
     @Override
     public JSONObject toJson() {

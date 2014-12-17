@@ -140,6 +140,9 @@ public class MainActivity extends Activity {
              Log.d("MAIN COPAIN",u.getFirstName());
          }
 
+         Log.e("checkpoint name",participations.first().getRace().getTrack().getCheckpoints().first().getName());
+         ws.setCheckpoint(participations.first().getRace().getTrack().getCheckpoints().first());
+
          return true;
     }
 

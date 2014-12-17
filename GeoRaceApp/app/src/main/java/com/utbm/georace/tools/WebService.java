@@ -139,6 +139,9 @@ public class WebService {
 
     }
 
+    /*
+                    GETTER du service
+     */
     //Interroge le webservice,
     // Si l'utilisateur est autorisé la fonction retourne l'obj User autorisé,
     // Sinon null
@@ -146,7 +149,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_login));//connection au service gerant le login
+            httpPost.setURI(new URI(Config.Service.service_get_login));//connection au service gerant le login
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("userLogin", name));
@@ -193,7 +196,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_friendship));
+            httpPost.setURI(new URI(Config.Service.service_get_friendship));
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("friendship", String.valueOf(userLogged.getId())));
@@ -231,7 +234,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_user));
+            httpPost.setURI(new URI(Config.Service.service_get_user));
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("user", "list"));
@@ -316,7 +319,7 @@ public class WebService {
 
         try
         {
-            httpPost.setURI(new URI(Config.Service.service_checkpoints));
+            httpPost.setURI(new URI(Config.Service.service_get_checkpoints));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("checkpoint",String.valueOf(trackId)));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
@@ -360,7 +363,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_track));
+            httpPost.setURI(new URI(Config.Service.service_get_track));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("track", "list"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
@@ -412,7 +415,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_race));
+            httpPost.setURI(new URI(Config.Service.service_get_race));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("race", "list"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
@@ -462,7 +465,6 @@ public class WebService {
         return races.ceiling(new Race(raceid));
     }
 
-
     public TreeSet<Participation>  getUserParticipation(){
         TreeSet<Participation> upart = new TreeSet<Participation>();
 
@@ -475,7 +477,6 @@ public class WebService {
 
     }
 
-
     public TreeSet<Participation>  getUserParticipationByUser(Integer userId){
         if(participations.isEmpty())participations= getParticipations();
 
@@ -486,7 +487,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_participation));
+            httpPost.setURI(new URI(Config.Service.service_get_participation));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("participation", "*"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
@@ -537,5 +538,43 @@ public class WebService {
         return friendParticipation;
     }
 
+    /*
+                SETTER du service
+
+     */
+
+    public boolean setCheckpoint(Checkpoint c){
+
+            try
+            {
+                httpPost.setURI(new URI(Config.Service.service_set_checkpoints));
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+                param.add(new BasicNameValuePair("checkpoint","1"));
+                param.add(new BasicNameValuePair("name",c.getName()));
+                param.add(new BasicNameValuePair("latitude",String.valueOf(c.getLatitude())));
+                param.add(new BasicNameValuePair("longitude",String.valueOf(c.getLongitude())));
+                param.add(new BasicNameValuePair("photo",String.valueOf(c.getPhoto().getId())));
+                param.add(new BasicNameValuePair("creator", String.valueOf(c.getCreator().getId())));
+
+                httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+
+                if(isResponseOk(httpResponse))
+                {
+                    String responseString = getStringFromResponse(httpResponse);
+                    Log.d("WEBSERVICE SET CHECKPOINT",responseString);
+                    JSONObject jso = new JSONObject(responseString);
+
+                    if(jso.getString("Status").compareTo("Ok")!=0){
+                        return false;
+                    }
+                }
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        return true;
+    }
 
 }
