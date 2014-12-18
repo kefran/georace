@@ -7,25 +7,28 @@ header('content-type: application/json; charset=utf-8');
 require_once('admin/conf.php');
 require_once('admin/pdo2.php');
 
-$_POST['track']=1;
 
-if ((isset($_POST['track'])) && (!empty($_POST['track'])))
-{
+if ((isset($_POST['track'])))
+{	
 	$pdo =null;
 	try {
 		$pdo = PDO2::getInstance();
 		$select = $pdo->prepare("
-			SELECT 
-				t.id
-				,t.name
-			FROM 
-				Track t
-				;");
-		$select->execute();
-
-			$data=$select->fetchAll(PDO::FETCH_ASSOC);
-			die(json_encode($data));
+			INSERT INTO `georace`.`track` (`name`) 
+				VALUES ( :name );
+				");
+		
+		$select->bindParam(":name",$_POST['name']);
 	
+		$ret = $select->execute();
+
+		if ($ret){
+			die(json_encode(Array("Status"=>"Ok")));
+		}
+		else{
+			die(json_encode(Array("Status"=>"NOk")));
+		}
+
 	}
 	catch (Exception $e) {
 		echo $e;

@@ -8,7 +8,7 @@ require_once ('admin/pdo2.php');
 
 //$_POST ['checkpoint'] = 2;
 
-if ((isset ( $_POST ['checkpoint'] )) && (! empty ( $_POST ['checkpoint'] ))) {
+if ((isset ( $_POST ['track'] )) && (! empty ( $_POST ['track'] ))) {
 	$pdo = null;
 	try {
 		$pdo = PDO2::getInstance ();
@@ -25,21 +25,14 @@ INNER JOIN track_checkpoint tc
 on tc.checkpoint=c.id
 WHERE tc.track=:trackid;" );
 		$trackid =$_POST ['checkpoint'] ;
-		$select->bindParam ( "trackid", $trackid );
+		$select->bindParam ( ":trackid", $trackid );
 		$select->execute ();
+			
+		$data = $select->fetchAll ( PDO::FETCH_ASSOC );
+		die ( json_encode ( $data ) );
 		
-		if ($select->rowCount () <= 0) {
-			die ( json_encode ( Array (
-					"Status" => "unauthorized" 
-			) ) );
-		} else {
-			$data = $select->fetchAll ( PDO::FETCH_ASSOC );
-			die ( json_encode ( $data ) );
-		}
 	} catch ( Exception $e ) {
-		echo ('HTTP/1.0 456 Unrecoverable Error');
-		header ( 'HTTP/1.0 456 Unrecoverable Error' );
-		
+		die ( json_encode ( Array("Status"=>"Nok")) );
 		exit ();
 	}
 } else {

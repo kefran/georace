@@ -143,19 +143,13 @@ public class MainActivity extends Activity {
              Log.d("MAIN COPAIN",u.getFirstName());
          }
 
-
-         Log.e("checkpoint name",participations.first().getRace().getTrack().getCheckpoints().first().getName());
-
          return true;
     }
 
      @Override
      protected void onPostExecute(Boolean aBoolean) {
          super.onPostExecute(aBoolean);
-
          lastParticipationList.setAdapter(new ParticipationAdapter(getApplicationContext(),participations));
-
-
 
      }
  }

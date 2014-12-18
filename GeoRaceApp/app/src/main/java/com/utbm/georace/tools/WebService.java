@@ -104,17 +104,21 @@ public class WebService {
 
         HttpEntity httpEntity = resp.getEntity();
         StatusLine statusLine = resp.getStatusLine();
-        Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
+
+
 
         if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
             Log.e("WebService", "Connection problem");
+            Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
+            String rep = getStringFromResponse(resp);
+            Log.e("WebService resp",rep);
             return false;
         }
 
         String content_type = resp.getFirstHeader("content-type").getValue();
 
         if (!content_type.contains("application/json")) {
-            Log.e("WebService", "Server Problème");
+            Log.e("WebService", "Server Problem");
             return false;
         }
 
@@ -321,6 +325,8 @@ public class WebService {
         {
             httpPost.setURI(new URI(Config.Service.service_get_checkpoints));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            param.add(new BasicNameValuePair("track",String.valueOf(trackId)));
             param.add(new BasicNameValuePair("checkpoint",String.valueOf(trackId)));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -410,14 +416,14 @@ public class WebService {
     public TreeSet<Race> getRaces(){
 
        TreeMap<Integer, Race> raceTreeMap = new TreeMap<Integer, Race>();
-       if(tracks.isEmpty())tracks = getTracks();
-       if(users.isEmpty())users =getUsers();
+       if(tracks.isEmpty())tracks = getTracks();//TODO updateTracks();
+       if(users.isEmpty())users =getUsers();//TODO updateUsers();
 
         try {
 
             httpPost.setURI(new URI(Config.Service.service_get_race));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
-            param.add(new BasicNameValuePair("race", "list"));
+            param.add(new BasicNameValuePair("race", "*"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
 
@@ -473,8 +479,11 @@ public class WebService {
 
         for(Participation p : participations)
         {
-            Log.e("WEBSERVICE GETUSERPARTICIPATION",String.valueOf(p.getUser().getId()));
-            if(userLogged.getId()==p.getUser().getId())upart.add(p);
+
+            if(userLogged.getId()==p.getUser().getId()){
+                Log.e("WEBSERVICE GETUSERPARTICIPATION",String.valueOf(p.getUser().getId()));
+                upart.add(p);
+            }
         }
 
         return upart;
@@ -545,15 +554,11 @@ public class WebService {
 
             try
             {
-                httpPost.setURI(new URI(Config.Service.service_set_checkpoints));
+                httpPost.setURI(new URI(Config.Service.service_set_track));
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
 
-                param.add(new BasicNameValuePair("checkpoint","1"));
+                param.add(new BasicNameValuePair("track","1"));
                 param.add(new BasicNameValuePair("name",c.getName()));
-                param.add(new BasicNameValuePair("latitude",String.valueOf(c.getLatitude())));
-                param.add(new BasicNameValuePair("longitude",String.valueOf(c.getLongitude())));
-                param.add(new BasicNameValuePair("photo",String.valueOf(c.getPhoto().getId())));
-                param.add(new BasicNameValuePair("creator", String.valueOf(c.getCreator().getId())));
 
                 httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
                 HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -575,6 +580,36 @@ public class WebService {
         return true;
     }
 
+    public boolean setTrack(Track c){
+
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_set_track));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            param.add(new BasicNameValuePair("track","1"));
+            param.add(new BasicNameValuePair("name",c.getName()));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if(isResponseOk(httpResponse))
+            {
+                String responseString = getStringFromResponse(httpResponse);
+                Log.d("WEBSERVICE SET TRACK",responseString);
+                JSONObject jso = new JSONObject(responseString);
+
+                if(jso.getString("Status").compareTo("Ok")!=0){
+                    return false;
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+
+    }
 
     public boolean setParticipation(Participation p){
 
@@ -603,7 +638,6 @@ public class WebService {
 
                 if(jso.getString("Status").compareTo("Ok")!=0)
                     return false;
-
             }
 
         }catch (Exception e){
