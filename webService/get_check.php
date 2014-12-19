@@ -8,12 +8,12 @@ require_once('admin/conf.php');
 require_once('admin/pdo2.php');
 
 
-if ((isset ( $_POST ['user'] ) && isset($_POST['race'])) ) {
+if ((isset ( $_POST['user'] ) && isset($_POST['race'])) ) {
 	$pdo = null;
 	try {
 		$pdo = PDO2::getInstance ();
 		$select = $pdo->prepare ( "SELECT user,race,checkpoint,date_check FROM georace.`check` 
-				WHERE user=:user AND race=:race ;" );
+				WHERE user= :user AND race= :race ;" );
 
 		$select->bindParam ( ":userid", $_POST['user'] );
 		$select->bindParam ( ":raceid", $_POST['race'] );
