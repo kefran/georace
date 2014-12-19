@@ -154,7 +154,7 @@ public class WebService {
         try {
 
             httpPost.setURI(new URI(Config.Service.service_get_login));//connection au service gerant le login
-
+            Log.e("URI:",httpPost.getURI().toString());
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("userLogin", name));
             param.add(new BasicNameValuePair("userPassword", password));
@@ -327,7 +327,7 @@ public class WebService {
             List<NameValuePair> param = new ArrayList<NameValuePair>();
 
             param.add(new BasicNameValuePair("track",String.valueOf(trackId)));
-            param.add(new BasicNameValuePair("checkpoint",String.valueOf(trackId)));
+            param.add(new BasicNameValuePair("checkpoint", String.valueOf(trackId)));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
 
