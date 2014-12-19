@@ -13,7 +13,7 @@ if ((isset ( $_POST['user'] ) && isset($_POST['race'])) ) {
 	try {
 		$pdo = PDO2::getInstance ();
 		$select = $pdo->prepare ( "SELECT user,race,checkpoint,date_check FROM georace.`check` 
-				WHERE user= :user AND race= :race ;" );
+				WHERE user= :userid AND race= :raceid ;" );
 
 		$select->bindParam ( ":userid", $_POST['user'] );
 		$select->bindParam ( ":raceid", $_POST['race'] );
