@@ -21,7 +21,7 @@ if ((isset($_POST['participation'])))
 				,p.end
 				,p.finished
 			FROM 
-				Participation p
+				participation p
 			WHERE 
 				p.user = :userid
 				;");

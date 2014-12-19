@@ -17,7 +17,6 @@ public class AccountActivity extends Activity {
         setContentView(R.layout.activity_account);
     }
 
-
     //region action bar
 /*
         Manage the actionbar menu

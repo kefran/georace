@@ -15,6 +15,7 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.utbm.georace.model.Check;
 import com.utbm.georace.model.Checkpoint;
 import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.Race;
@@ -65,6 +66,7 @@ public class WebService {
     private TreeSet<Race> races;
     private TreeSet<Team> teams;
     private TreeSet<Track> tracks;
+    private TreeSet<Check> checks;
 
     private TreeSet<User> userLoggedFriends;
 
@@ -82,6 +84,7 @@ public class WebService {
         userParticipations = new TreeSet< Participation>();
         userLoggedFriends = new TreeSet<User>();
         teams = new TreeSet<Team>();
+        checks = new TreeSet<Check>();
 
         userLogged=null;
 
@@ -105,8 +108,6 @@ public class WebService {
         HttpEntity httpEntity = resp.getEntity();
         StatusLine statusLine = resp.getStatusLine();
 
-
-
         if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
             Log.e("WebService", "Connection problem");
             Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
@@ -121,7 +122,6 @@ public class WebService {
             Log.e("WebService", "Server Problem");
             return false;
         }
-
 
         return true;
     }
@@ -364,6 +364,20 @@ public class WebService {
         return  cpList;
     }
 
+    public Checkpoint getCheckPoint(Integer checkPointid ){
+
+        if(tracks.isEmpty())tracks.addAll( getTracks());
+
+        for(Track t: tracks)
+            for(Checkpoint c :t.getCheckpoints())
+                if(c.getId()==checkPointid)return c;
+
+
+        Log.e("WEBSERVICE getCheckpoint","Pas de checkpoint trouver pour l'id"+String.valueOf(checkPointid));
+        return null;
+
+    }
+
     public TreeSet<Track> getTracks(){
         TreeSet<Track> trackTree = new TreeSet<Track>();
 
@@ -407,7 +421,7 @@ public class WebService {
     }
 
     public Track getTrack(Integer trackid){
-        if(tracks.isEmpty())tracks=getTracks();
+        if(tracks.isEmpty())tracks.addAll(getTracks());
 
         return tracks.ceiling(new Track(trackid));
 
@@ -415,7 +429,7 @@ public class WebService {
 
     public TreeSet<Race> getRaces(){
 
-       TreeMap<Integer, Race> raceTreeMap = new TreeMap<Integer, Race>();
+
        if(tracks.isEmpty())tracks = getTracks();//TODO updateTracks();
        if(users.isEmpty())users =getUsers();//TODO updateUsers();
 
@@ -472,6 +486,54 @@ public class WebService {
         return races.ceiling(new Race(raceid));
     }
 
+    public TreeSet<Check> getChecks(User u,Race r){
+
+        try {
+
+            httpPost.setURI(new URI(Config.Service.service_get_checks));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("user",String.valueOf(u.getId())));
+            param.add(new BasicNameValuePair("race",String.valueOf(r.getId())));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+
+                JSONArray checkList = new JSONArray(responseString);
+                int size = checkList.length();
+                Check buf=null;
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+
+                for(int i=0;i<size;i++)
+                {
+
+                    JSONObject jbuf = checkList.getJSONObject(i);
+                    Race bufr =getRace(jbuf.getInt(Check.TAG_CHECK_RACE));
+                    Checkpoint bufc = getCheckPoint(jbuf.getInt(Check.TAG_CHECK_CHECKPOINT));
+
+                    buf = new Check(getUser(jbuf.getInt(Check.TAG_CHECK_USER)),bufr,bufc,sdf.parse(jbuf.getString(Check.TAG_CHECK_DATE)));
+
+                    checks.add(buf);
+                }
+
+                Log.d("WebService getRaces", responseString);
+
+            }
+
+        } catch (Exception e) {
+
+            Log.d("WebService getRaces", "Echec de la récuperation des données depuis le serveur");
+            e.printStackTrace();
+
+        }
+        return checks;
+
+
+    }
 
 
     public TreeSet<Participation>  getUserParticipation(User u){

@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.utbm.georace.R;
 import com.utbm.georace.adapter.ParticipationAdapter;
+import com.utbm.georace.model.Check;
 import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
@@ -145,6 +146,12 @@ public class MainActivity extends Activity {
         participations = ws.getUserParticipation(ws.getUserLogged());
         friendsParticipations = ws.getFriendParticipation();
         friends = ws.getFriends();
+
+         for(Check c :ws.getChecks(ws.getUserLogged(),participations.first().getRace()))
+         {
+             Log.d("Main ACTIVITY CHECKS",c.getUser().getFirstName());
+         }
+
 
          for(User u : friends){
              Log.d("MAIN COPAIN",u.getFirstName());

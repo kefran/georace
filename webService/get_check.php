@@ -8,32 +8,30 @@ require_once('admin/conf.php');
 require_once('admin/pdo2.php');
 
 
-
-if ((isset($_POST['helloworld'])) && (!empty($_POST['helloworld'])))
-{
-	$pdo =null;
+if ((isset ( $_POST ['user'] ) && isset($_POST['race'])) ) {
+	$pdo = null;
 	try {
-		$pdo = PDO2::getInstance();
-		$select = $pdo->prepare(";");
-		$select->bindParam(':userPassword',$pwd ,PDO::PARAM_STR);
-		$select->execute();
+		$pdo = PDO2::getInstance ();
+		$select = $pdo->prepare ( "SELECT user,race,checkpoint,date_check FROM georace.`check` 
+				WHERE user=:user AND race=:race ;" );
 
-		if ($select->rowCount()!=1){
-			die(json_encode(Array("Status"=>"unauthorized")));
-		}
-		else{
-			$data=$select->fetch(PDO::FETCH_ASSOC);
-			die(json_encode($data));
-		}
+		$select->bindParam ( ":userid", $_POST['user'] );
+		$select->bindParam ( ":raceid", $_POST['race'] );
 
+		$select->execute ();
+			
+		$data = $select->fetchAll ( PDO::FETCH_ASSOC );
+		die ( json_encode ( $data ) );
+		
+	} catch ( Exception $e ) {
+
+		die ( json_encode ( Array("Status"=>$e->getMessage().$e->getTrace())) );
+		exit ();
 	}
-	catch (Exception $e) {
-		echo('HTTP/1.0 456 Unrecoverable Error');
-		header('HTTP/1.0 456 Unrecoverable Error');
-
-		exit();
-	}
-}else{
-	die(json_encode(Array("Status"=>"unauthorized")));
+} else {
+	die ( json_encode ( Array (
+			"Status" => "unauthorized" 
+	) ) );
 }
+
 ?>
