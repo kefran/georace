@@ -22,9 +22,12 @@ if ((isset($_POST['participation'])))
 				,p.finished
 			FROM 
 				Participation p
+			WHERE 
+				p.user = :userid
 				;");
+		
+		$select->bindParam(":userid",$_POST['participation']);
 		$select->execute();
-
 		
 			$data=$select->fetchAll(PDO::FETCH_ASSOC);
 			die(json_encode($data));

@@ -142,12 +142,15 @@ public class MainActivity extends Activity {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-        participations = ws.getUserParticipation();
+        participations = ws.getUserParticipation(ws.getUserLogged());
         friendsParticipations = ws.getFriendParticipation();
         friends = ws.getFriends();
 
          for(User u : friends){
              Log.d("MAIN COPAIN",u.getFirstName());
+         }
+         for(Participation p : participations){
+             Log.d("PARTICIPATION TRACK",p.getRace().getTrack().getName());
          }
 
          return true;

@@ -68,7 +68,7 @@ public class WebService {
 
     private TreeSet<User> userLoggedFriends;
 
-    private TreeSet<Participation> participations;
+    private TreeSet<Participation> userParticipations;
 
 
     private WebService() {
@@ -79,7 +79,7 @@ public class WebService {
         users = new TreeSet< User>();
         races = new TreeSet< Race>();
         tracks = new TreeSet< Track>();
-        participations = new TreeSet< Participation>();
+        userParticipations = new TreeSet< Participation>();
         userLoggedFriends = new TreeSet<User>();
         teams = new TreeSet<Team>();
 
@@ -352,7 +352,7 @@ public class WebService {
                     cpList.add(buf);
                 }
 
-                Log.d("WebService getTrackCheckpoints ", responseString);
+                Log.d("WebService getCheckPointsTrack ", responseString);
 
             }
 
@@ -472,30 +472,17 @@ public class WebService {
         return races.ceiling(new Race(raceid));
     }
 
-    public TreeSet<Participation>  getUserParticipation(){
-        TreeSet<Participation> upart = new TreeSet<Participation>();
 
-        if(participations.isEmpty())getParticipations();
 
-        for(Participation p : participations)
-        {
+    public TreeSet<Participation>  getUserParticipation(User u){
 
-            if(userLogged.getId()==p.getUser().getId()){
-                Log.e("WEBSERVICE GETUSERPARTICIPATION",String.valueOf(p.getUser().getId()));
-                upart.add(p);
-            }
-        }
-
-        return upart;
-    }
-
-    public TreeSet<Participation>  getParticipations(){
+            TreeSet<Participation> upart = new TreeSet<Participation>();
 
         try {
 
             httpPost.setURI(new URI(Config.Service.service_get_participation));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
-            param.add(new BasicNameValuePair("participation", "*"));
+            param.add(new BasicNameValuePair("participation", String.valueOf(u.getId())));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
 
@@ -519,7 +506,7 @@ public class WebService {
                             ,jbuf.getInt(Participation.TAG_PARTICIPATION_FINISHED)
                     );
 
-                    participations.add(buf);
+                    userParticipations.add(buf);
                 }
                 Log.d("WebService getParticipation", responseString);
             }
@@ -528,7 +515,7 @@ public class WebService {
             Log.d("WebService getParticipation", "Echec de la récuperation des données depuis le serveur");
             e.printStackTrace();
         }
-        return participations;
+        return userParticipations;
     }
 
     public TreeSet<Participation> getFriendParticipation(){
@@ -536,11 +523,9 @@ public class WebService {
         TreeSet<Participation> friendParticipation = new TreeSet<Participation>();
 
         if(userLoggedFriends.isEmpty())getFriends();
-        if(participations.isEmpty())getParticipations();
 
       for(User u :userLoggedFriends)
-          for(Participation p :participations)
-              if(u.getId()==p.getUser().getId())friendParticipation.add(p);
+          friendParticipation.addAll(getUserParticipation(u));
 
         return friendParticipation;
     }
