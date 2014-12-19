@@ -96,9 +96,19 @@ public class Participation implements ISerializable, Comparable<Participation> {
         int partId = participation.getUser().getId();
         int raceId = participation.getRace().getId();
 
-        if(partId==user.getId() && raceId == participation.getRace().getId() )
-            return 0;
+        if(partId<user.getId())return 1;
 
+        if(partId==user.getId())
+        {
+            int rid= race.getId();
+            int prid = participation.getRace().getId();
+
+                if(rid<prid)return -1;
+
+                if(prid==rid)return 0;
+
+                if(rid>prid)return 1;
+        }
         if(partId>user.getId())
             return -1;
 

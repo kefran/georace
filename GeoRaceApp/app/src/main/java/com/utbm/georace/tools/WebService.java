@@ -146,6 +146,17 @@ public class WebService {
     /*
                     GETTER du service
      */
+
+    public void disconnect(){
+        userLogged=null;
+        users.clear();
+        races.clear();
+        tracks.clear();
+        checks.clear();
+        userLoggedFriends.clear();
+        userParticipations.clear();
+
+    }
     //Interroge le webservice,
     // Si l'utilisateur est autorisé la fonction retourne l'obj User autorisé,
     // Sinon null

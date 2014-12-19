@@ -88,6 +88,14 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        participations.clear();
+        WebService.getInstance().disconnect();
+        super.onBackPressed();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -129,6 +137,8 @@ public class MainActivity extends Activity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+
     }
     //endregion
 
@@ -146,7 +156,7 @@ public class MainActivity extends Activity {
         participations = ws.getUserParticipation(ws.getUserLogged());
         friendsParticipations = ws.getFriendParticipation();
         friends = ws.getFriends();
-        TreeSet<Check> checks = ws.getChecks(participations.first().getUser(),participations.first().getRace());
+        TreeSet<Check> checks = ws.getChecks(ws.getUserLogged(),participations.first().getRace());
 
          for(Check c :checks)
          {
