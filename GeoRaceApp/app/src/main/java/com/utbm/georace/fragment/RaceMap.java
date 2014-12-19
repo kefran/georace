@@ -1,6 +1,10 @@
 package com.utbm.georace.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -19,6 +23,7 @@ import com.utbm.georace.R;
 
 public class RaceMap extends Fragment {
 
+    Context myContext;
     MapView mapView;
     GoogleMap map;
 
@@ -41,7 +46,6 @@ public class RaceMap extends Fragment {
         // Updates the location and zoom of the MapView
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(47.7, 6.8), 10);
         map.animateCamera(cameraUpdate);
-
         return v;
     }
 
@@ -66,8 +70,23 @@ public class RaceMap extends Fragment {
 
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+
+        public void setUserPosition();
     }
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+    }
+
 
 }

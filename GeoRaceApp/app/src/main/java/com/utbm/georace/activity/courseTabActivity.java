@@ -3,6 +3,7 @@ package com.utbm.georace.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,12 +13,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.MapView;
 import com.utbm.georace.R;
 import com.utbm.georace.fragment.CheckpointList;
 import com.utbm.georace.fragment.ParticipantsList;
 import com.utbm.georace.fragment.RaceMap;
 
-public class CourseTabActivity extends FragmentActivity implements RaceMap.OnFragmentInteractionListener, CheckpointList.OnFragmentInteractionListener, ParticipantsList.OnFragmentInteractionListener {
+public class CourseTabActivity extends FragmentActivity implements
+        RaceMap.OnFragmentInteractionListener,
+        CheckpointList.OnFragmentInteractionListener,
+        ParticipantsList.OnFragmentInteractionListener {
 
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     public  RaceMap fragmentRaceMap;
@@ -46,6 +51,22 @@ public class CourseTabActivity extends FragmentActivity implements RaceMap.OnFra
                 .setText(R.string.current_race_tab_participants)
                 .setTabListener(new TabListener<ParticipantsList>(this,"ParticipantsList",ParticipantsList.class)));
     }
+
+
+    public void test() {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentRaceMap = (RaceMap) fragmentManager.findFragmentByTag("RaceMap");
+
+
+    }
+    //region racemap
+    @Override
+    public void setUserPosition(){
+
+    }
+    //endregion
 
 
     //region action bar
@@ -126,6 +147,7 @@ public class CourseTabActivity extends FragmentActivity implements RaceMap.OnFra
     public void onFragmentInteraction(Uri uri) {
 
     }
+
     //endregion
 
     //region   Tablistener custom pour la navigation par onglets
