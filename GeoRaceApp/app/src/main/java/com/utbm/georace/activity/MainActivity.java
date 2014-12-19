@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
         participations = ws.getUserParticipation(ws.getUserLogged());
         friendsParticipations = ws.getFriendParticipation();
         friends = ws.getFriends();
-        TreeSet<Check> checks = ws.getChecks(ws.getUserLogged(),participations.first().getRace());
+        TreeSet<Check> checks = ws.getChecks(participations.first().getUser(),participations.first().getRace());
 
          for(Check c :checks)
          {
