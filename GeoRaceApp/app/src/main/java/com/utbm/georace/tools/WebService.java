@@ -430,7 +430,8 @@ public class WebService {
     public TreeSet<Race> getRaces(){
 
 
-       if(tracks.isEmpty())tracks = getTracks();//TODO updateTracks();
+       if(tracks.isEmpty())tracks.addAll( getTracks());//TODO updateTracks();
+
        if(users.isEmpty())users =getUsers();//TODO updateUsers();
 
         try {
@@ -501,7 +502,7 @@ public class WebService {
             if (isResponseOk(httpResponse)) {
 
                 String responseString = getStringFromResponse(httpResponse);
-
+                Log.d("WS GET CHECKS ",responseString);
                 JSONArray checkList = new JSONArray(responseString);
                 int size = checkList.length();
                 Check buf=null;

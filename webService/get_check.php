@@ -24,8 +24,8 @@ if ((isset ( $_POST ['user'] ) && isset($_POST['race'])) ) {
 		die ( json_encode ( $data ) );
 		
 	} catch ( Exception $e ) {
-
-		die ( json_encode ( Array("Status"=>$e->getMessage().$e->getTrace())) );
+		$message =$e->getMessage();
+		die ( json_encode ( Array("Status"=>$message)) );
 		exit ();
 	}
 } else {
