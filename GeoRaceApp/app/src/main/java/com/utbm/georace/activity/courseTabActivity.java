@@ -4,10 +4,12 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.utbm.georace.R;
@@ -15,7 +17,7 @@ import com.utbm.georace.fragment.CheckpointList;
 import com.utbm.georace.fragment.ParticipantsList;
 import com.utbm.georace.fragment.RaceMap;
 
-public class courseTabActivity extends FragmentActivity implements RaceMap.OnFragmentInteractionListener, CheckpointList.OnFragmentInteractionListener, ParticipantsList.OnFragmentInteractionListener {
+public class CourseTabActivity extends FragmentActivity implements RaceMap.OnFragmentInteractionListener, CheckpointList.OnFragmentInteractionListener, ParticipantsList.OnFragmentInteractionListener {
 
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     public  RaceMap fragmentRaceMap;
@@ -45,6 +47,65 @@ public class courseTabActivity extends FragmentActivity implements RaceMap.OnFra
                 .setTabListener(new TabListener<ParticipantsList>(this,"ParticipantsList",ParticipantsList.class)));
     }
 
+
+    //region action bar
+/*
+        Manage the actionbar menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
+
+        switch (item.getItemId())
+        {
+            case R.id.actionAccueil:
+                intent = new Intent(this,MainActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.actionRace:
+                intent = new Intent(this, CourseTabActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.actionSearchRace:
+                intent = new Intent(this, SearchRaceActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.actionCreateRace:
+                intent = new Intent(this, CreateRaceActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.actionScore:
+                intent = new Intent(this, ScoreActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.actionAccount:
+                intent = new Intent(this, AccountActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.actionLogOff:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    //endregion
+
     //region Gestion fragment
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -60,13 +121,6 @@ public class courseTabActivity extends FragmentActivity implements RaceMap.OnFra
         outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getActionBar()
                 .getSelectedNavigationIndex());
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
 
     @Override
     public void onFragmentInteraction(Uri uri) {

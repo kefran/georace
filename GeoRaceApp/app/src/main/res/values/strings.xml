@@ -18,5 +18,10 @@
     <string name="current_race_tab_participants">Participants</string>
     <string name="title_activity_testmap">Map</string>
     <string name="title_activity_testaa">Map</string>
+    <string name="title_activity_search_race">SearchRace</string>
+    <string name="title_activity_create_race">CreateRaceActivity</string>
+    <string name="title_activity_score">ScoreActivity</string>
+    <string name="title_activity_account">AccountActivity</string>
+    <string name="title_activity_create_account">CreateAccountActivity</string>
 
 </resources>

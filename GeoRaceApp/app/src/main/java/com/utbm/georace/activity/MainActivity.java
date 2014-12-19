@@ -13,8 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.utbm.georace.R;
@@ -22,14 +20,10 @@ import com.utbm.georace.adapter.ParticipationAdapter;
 import com.utbm.georace.model.Participation;
 import com.utbm.georace.tools.WebService;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 //endregion
 
 public class MainActivity extends Activity {
-
 
     //region Variables
     private String[] mMenuList;
@@ -47,9 +41,6 @@ public class MainActivity extends Activity {
 
     //endregion
 
-    /*
-        onCreate method
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +67,7 @@ public class MainActivity extends Activity {
         builder.execute();
     }
 
-   //region ActionBar
+    //region action bar
 /*
         Manage the actionbar menu
      */
@@ -91,34 +82,47 @@ public class MainActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
+
         switch (item.getItemId())
         {
             case R.id.actionAccueil:
-                //action
+                intent = new Intent(this,MainActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.actionRace:
-                Intent intent = new Intent(this, courseTabActivity.class);
+                intent = new Intent(this, CourseTabActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.actionSearchRace:
-                //action
+                intent = new Intent(this, SearchRaceActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.actionCreateRace:
-                //action
+                intent = new Intent(this, CreateRaceActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.actionScore:
+                intent = new Intent(this, ScoreActivity.class);
+                startActivity(intent);
                 //action
                 return true;
             case R.id.actionAccount:
+                intent = new Intent(this, AccountActivity.class);
+                startActivity(intent);
                 //action
                 return true;
             case R.id.actionLogOff:
-                //action
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+    //endregion
+
+
+
  class BuildMainPageTask extends AsyncTask<Void,Void,Boolean> {
 
 
