@@ -300,8 +300,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 User user = ws.getLogin(mLogin,mPassword);
 
-                if(user!=null)Log.d("GetLogin",user.toJson().toString());
-                else Log.d("GetLogin","Failed");
+                if(user!=null){Log.d("GetLogin",user.toJson().toString());}
+                else {Log.d("GetLogin","Failed");return false;}
 
             return true;
         }

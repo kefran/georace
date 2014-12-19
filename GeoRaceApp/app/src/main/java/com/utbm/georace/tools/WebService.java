@@ -61,13 +61,14 @@ public class WebService {
     private HttpPost httpPost;
 
     private User userLogged;
+    private TreeSet<User> users;
+    private TreeSet<Race> races;
+    private TreeSet<Team> teams;
+    private TreeSet<Track> tracks;
 
-    private TreeSet<User> users;//Key = user id Value = User Object
-    private TreeSet<Race> races;//Key = race id Value = Race Object
-    private TreeSet<Team> teams;//Key = teams id Value = Team Object
-    private TreeSet<Track> tracks;//Key = track id Value = Track Object
+    private TreeSet<User> userLoggedFriends;
 
-    private TreeSet<Participation> participation;//Key = userid value = Participation
+    private TreeSet<Participation> participations;
 
 
     private WebService() {
@@ -78,7 +79,8 @@ public class WebService {
         users = new TreeSet< User>();
         races = new TreeSet< Race>();
         tracks = new TreeSet< Track>();
-        participation = new TreeSet< Participation>();
+        participations = new TreeSet< Participation>();
+        userLoggedFriends = new TreeSet<User>();
         teams = new TreeSet<Team>();
 
         userLogged=null;
@@ -102,24 +104,27 @@ public class WebService {
 
         HttpEntity httpEntity = resp.getEntity();
         StatusLine statusLine = resp.getStatusLine();
-        Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
+
+
 
         if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
             Log.e("WebService", "Connection problem");
+            Log.d("STATUS LINE", Integer.toString(statusLine.getStatusCode()));
+            String rep = getStringFromResponse(resp);
+            Log.e("WebService resp",rep);
             return false;
         }
 
         String content_type = resp.getFirstHeader("content-type").getValue();
 
         if (!content_type.contains("application/json")) {
-            Log.e("WebService", "Server Problème");
+            Log.e("WebService", "Server Problem");
             return false;
         }
 
 
         return true;
     }
-
 
     private String getStringFromResponse(HttpResponse response) {
         HttpEntity httpEntity = response.getEntity();
@@ -138,7 +143,9 @@ public class WebService {
 
     }
 
-
+    /*
+                    GETTER du service
+     */
     //Interroge le webservice,
     // Si l'utilisateur est autorisé la fonction retourne l'obj User autorisé,
     // Sinon null
@@ -146,7 +153,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_login));//connection au service gerant le login
+            httpPost.setURI(new URI(Config.Service.service_get_login));//connection au service gerant le login
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("userLogin", name));
@@ -156,7 +163,6 @@ public class WebService {
 
             httpPost.setEntity(new UrlEncodedFormEntity(param));
             HttpResponse response = httpClient.execute(httpPost);
-
 
             if (isResponseOk(response)) {
 
@@ -169,7 +175,6 @@ public class WebService {
                     Log.d("JSON TEXT", jsonObject.toString());
                     Log.d("JSON to JAVA object", user.getLoginName());
 
-                    users.add(user);
                     userLogged = user;
                     return user;
 
@@ -193,16 +198,47 @@ public class WebService {
             return null;
         }
 
+        try {
 
-        return null;
+            httpPost.setURI(new URI(Config.Service.service_get_friendship));
+
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("friendship", String.valueOf(userLogged.getId())));
+            httpPost.setEntity(new UrlEncodedFormEntity(param));
+
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if (isResponseOk(httpResponse)) {
+
+                String responseString = getStringFromResponse(httpResponse);
+                JSONArray userList = new JSONArray(responseString);
+                int size = userList.length();
+                User buf=null;
+
+                for(int i=0;i<size;i++)
+                {
+                    buf =getUser(userList.getJSONObject(i).getInt("friend"));
+                    Log.e("COPAIN SERVICE" ,String.valueOf(userList.getJSONObject(i).getInt("friend")));
+                    userLoggedFriends.add(buf);
+                }
+
+                Log.d("WebService getUsers", responseString);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return userLoggedFriends;
     };
+
     public TreeSet< User> getUsers() {
 
         TreeSet< User> userTree = new TreeSet< User>();
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_user));
+            httpPost.setURI(new URI(Config.Service.service_get_user));
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("user", "list"));
@@ -240,7 +276,8 @@ public class WebService {
             return null;
         }
 
-        users = getUsers();
+        if(users.isEmpty())getUsers();
+
         TreeMap<Float,User> userDistance = new TreeMap<Float, User>();//Key Distance with the logged user
 
         LatLng userLoggedLatLng = userLogged.getPosition();
@@ -271,18 +308,25 @@ public class WebService {
            Log.e("Web Service","User by id failed, no logged user");
            return null;
         }
-        return users.ceiling(new User(id));
+
+        if(users.isEmpty())getUsers();
+
+        for(User u : users)
+            if(u.getId()==id)return u;
+
+        return null;
 
     }
-
 
     public TreeSet<Checkpoint> getCheckpointsTrack(Integer trackId){
             TreeSet<Checkpoint> cpList = new TreeSet<Checkpoint>();
 
         try
         {
-            httpPost.setURI(new URI(Config.Service.service_checkpoints));
+            httpPost.setURI(new URI(Config.Service.service_get_checkpoints));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            param.add(new BasicNameValuePair("track",String.valueOf(trackId)));
             param.add(new BasicNameValuePair("checkpoint",String.valueOf(trackId)));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -325,7 +369,7 @@ public class WebService {
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_track));
+            httpPost.setURI(new URI(Config.Service.service_get_track));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("track", "list"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
@@ -372,20 +416,21 @@ public class WebService {
     public TreeSet<Race> getRaces(){
 
        TreeMap<Integer, Race> raceTreeMap = new TreeMap<Integer, Race>();
-       if(tracks.isEmpty())tracks = getTracks();
-       if(users.isEmpty())users =getUsers();
+       if(tracks.isEmpty())tracks = getTracks();//TODO updateTracks();
+       if(users.isEmpty())users =getUsers();//TODO updateUsers();
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_race));
+            httpPost.setURI(new URI(Config.Service.service_get_race));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
-            param.add(new BasicNameValuePair("race", "list"));
+            param.add(new BasicNameValuePair("race", "*"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
             HttpResponse httpResponse = httpClient.execute(httpPost);
 
             if (isResponseOk(httpResponse)) {
 
                 String responseString = getStringFromResponse(httpResponse);
+
                 JSONArray raceList = new JSONArray(responseString);
                 int size = raceList.length();
                 Race buf=null;
@@ -427,19 +472,28 @@ public class WebService {
         return races.ceiling(new Race(raceid));
     }
 
-    public TreeSet<Participation>  getParticipationByUser(Integer userId){
-        if(participation.isEmpty())participation= getParticipation();
+    public TreeSet<Participation>  getUserParticipation(){
+        TreeSet<Participation> upart = new TreeSet<Participation>();
 
-            return null;
+        if(participations.isEmpty())getParticipations();
 
+        for(Participation p : participations)
+        {
+
+            if(userLogged.getId()==p.getUser().getId()){
+                Log.e("WEBSERVICE GETUSERPARTICIPATION",String.valueOf(p.getUser().getId()));
+                upart.add(p);
+            }
+        }
+
+        return upart;
     }
-    public TreeSet<Participation>  getParticipation(){
 
-        TreeSet<Participation> participationTree = new TreeSet<Participation>();
+    public TreeSet<Participation>  getParticipations(){
 
         try {
 
-            httpPost.setURI(new URI(Config.Service.service_participation));
+            httpPost.setURI(new URI(Config.Service.service_get_participation));
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             param.add(new BasicNameValuePair("participation", "*"));
             httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
@@ -449,6 +503,7 @@ public class WebService {
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
                 String responseString = getStringFromResponse(httpResponse);
+
                 JSONArray participationList = new JSONArray(responseString);
                 int size = participationList.length();
                 Participation buf=null;
@@ -464,7 +519,7 @@ public class WebService {
                             ,jbuf.getInt(Participation.TAG_PARTICIPATION_FINISHED)
                     );
 
-                    participationTree.add(buf);
+                    participations.add(buf);
                 }
                 Log.d("WebService getParticipation", responseString);
             }
@@ -473,8 +528,126 @@ public class WebService {
             Log.d("WebService getParticipation", "Echec de la récuperation des données depuis le serveur");
             e.printStackTrace();
         }
-        return participationTree;
+        return participations;
+    }
+
+    public TreeSet<Participation> getFriendParticipation(){
+
+        TreeSet<Participation> friendParticipation = new TreeSet<Participation>();
+
+        if(userLoggedFriends.isEmpty())getFriends();
+        if(participations.isEmpty())getParticipations();
+
+      for(User u :userLoggedFriends)
+          for(Participation p :participations)
+              if(u.getId()==p.getUser().getId())friendParticipation.add(p);
+
+        return friendParticipation;
+    }
+
+    /*
+                SETTER du service
+
+     */
+
+    public boolean setCheckpoint(Checkpoint c){
+
+            try
+            {
+                httpPost.setURI(new URI(Config.Service.service_set_track));
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+                param.add(new BasicNameValuePair("track","1"));
+                param.add(new BasicNameValuePair("name",c.getName()));
+
+                httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+
+                if(isResponseOk(httpResponse))
+                {
+                    String responseString = getStringFromResponse(httpResponse);
+                    Log.d("WEBSERVICE SET CHECKPOINT",responseString);
+                    JSONObject jso = new JSONObject(responseString);
+
+                    if(jso.getString("Status").compareTo("Ok")!=0){
+                        return false;
+                    }
+                }
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        return true;
+    }
+
+    public boolean setTrack(Track c){
+
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_set_track));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            param.add(new BasicNameValuePair("track","1"));
+            param.add(new BasicNameValuePair("name",c.getName()));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if(isResponseOk(httpResponse))
+            {
+                String responseString = getStringFromResponse(httpResponse);
+                Log.d("WEBSERVICE SET TRACK",responseString);
+                JSONObject jso = new JSONObject(responseString);
+
+                if(jso.getString("Status").compareTo("Ok")!=0){
+                    return false;
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
 
     }
 
+    public boolean setParticipation(Participation p){
+
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_set_participation));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            param.add(new BasicNameValuePair("participation","1"));
+            param.add(new BasicNameValuePair("user",String.valueOf(p.getUser().getId())));
+            param.add(new BasicNameValuePair("race",String.valueOf(p.getRace().getId())));
+            param.add(new BasicNameValuePair("start",sdf.format(p.getStart())));
+            param.add(new BasicNameValuePair("end",sdf.format(p.getEnd())));
+            param.add(new BasicNameValuePair("finished", String.valueOf(p.getFinished())));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if(isResponseOk(httpResponse))
+            {
+                String responseString = getStringFromResponse(httpResponse);
+                Log.d("WEBSERVICE SET PARTICIPATION",responseString);
+                JSONObject jso = new JSONObject(responseString);
+
+                if(jso.getString("Status").compareTo("Ok")!=0)
+                    return false;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public User getUserLogged() {
+        return userLogged;
+    }
 }

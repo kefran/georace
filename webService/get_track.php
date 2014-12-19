@@ -23,19 +23,12 @@ if ((isset($_POST['track'])) && (!empty($_POST['track'])))
 				;");
 		$select->execute();
 
-		if ($select->rowCount()<=0){
-			die(json_encode(Array("Status"=>"empty")));
-		}
-		else{
 			$data=$select->fetchAll(PDO::FETCH_ASSOC);
 			die(json_encode($data));
-		}
-
+	
 	}
 	catch (Exception $e) {
-		echo('HTTP/1.0 456 Unrecoverable Error');
-		header('HTTP/1.0 456 Unrecoverable Error');
-
+		echo $e;
 		exit();
 	}
 }else{

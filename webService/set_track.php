@@ -7,35 +7,31 @@ header('content-type: application/json; charset=utf-8');
 require_once('admin/conf.php');
 require_once('admin/pdo2.php');
 
-$_POST['race']=1;
 
-if ((isset($_POST['race'])) && (!empty($_POST['race'])))
-{
+if ((isset($_POST['track'])))
+{	
 	$pdo =null;
 	try {
 		$pdo = PDO2::getInstance();
 		$select = $pdo->prepare("
-			SELECT 
-				R.id,
-				R.date_start,
-				R.date_end,
-				R.track,
-				R.organizer
-			FROM 
-				race R ;");
-
-		$select->execute();
-
+			INSERT INTO `georace`.`track` (`name`) 
+				VALUES ( :name );
+				");
 		
-			$data=$select->fetchAll(PDO::FETCH_ASSOC);
-			die(json_encode($data));
-		
+		$select->bindParam(":name",$_POST['name']);
+	
+		$ret = $select->execute();
+
+		if ($ret){
+			die(json_encode(Array("Status"=>"Ok")));
+		}
+		else{
+			die(json_encode(Array("Status"=>"NOk")));
+		}
 
 	}
 	catch (Exception $e) {
-		echo('HTTP/1.0 456 Unrecoverable Error');
-		header('HTTP/1.0 456 Unrecoverable Error');
-
+		echo $e;
 		exit();
 	}
 }else{

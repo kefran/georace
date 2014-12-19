@@ -93,9 +93,10 @@ public class Participation implements ISerializable, Comparable<Participation> {
     public int compareTo(Participation participation) {
         if(user==null)throw new NullPointerException();
 
-        int partId =participation.getUser().getId();
+        int partId = participation.getUser().getId();
+        int raceId = participation.getRace().getId();
 
-        if(partId==user.getId())
+        if(partId==user.getId() )
             return 0;
 
         if(partId>user.getId())

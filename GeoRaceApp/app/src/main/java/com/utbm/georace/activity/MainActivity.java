@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import android.support.v4.widget.DrawerLayout;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +19,13 @@ import android.widget.ListView;
 import com.utbm.georace.R;
 import com.utbm.georace.adapter.ParticipationAdapter;
 import com.utbm.georace.model.Participation;
+import com.utbm.georace.model.User;
 import com.utbm.georace.tools.WebService;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 //endregion
 
@@ -30,6 +36,10 @@ public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private View mProgressView;
+
+    private TreeSet<User> friends;
+    private TreeSet<Participation> participations;
+    private TreeSet<Participation> friendsParticipations;
 
     private ListView lastParticipationList;
     private String[] lastParticipationListData;
@@ -64,7 +74,7 @@ public class MainActivity extends Activity {
 //        friendsParticipationList.setAdapter(new ParticipationAdapter(this,friendsParticipationListData));
 
        builder = new BuildMainPageTask();
-        builder.execute();
+       builder.execute();
     }
 
     //region action bar
@@ -126,13 +136,19 @@ public class MainActivity extends Activity {
  class BuildMainPageTask extends AsyncTask<Void,Void,Boolean> {
 
 
-     TreeSet<Participation> participations;
-
      @Override
      protected Boolean doInBackground(Void... voids) {
         WebService ws = WebService.getInstance();
 
-        participations = ws.getParticipation();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        participations = ws.getUserParticipation();
+        friendsParticipations = ws.getFriendParticipation();
+        friends = ws.getFriends();
+
+         for(User u : friends){
+             Log.d("MAIN COPAIN",u.getFirstName());
+         }
 
          return true;
     }
@@ -140,11 +156,8 @@ public class MainActivity extends Activity {
      @Override
      protected void onPostExecute(Boolean aBoolean) {
          super.onPostExecute(aBoolean);
-
          lastParticipationList.setAdapter(new ParticipationAdapter(getApplicationContext(),participations));
 
      }
  }
-
-
 }
