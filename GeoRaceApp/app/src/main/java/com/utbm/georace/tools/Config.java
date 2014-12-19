@@ -16,7 +16,7 @@ public class Config {
         public final static String url_get_friend = "get_friendship.php";
         public final static String url_get_race = "get_race.php";
         public final static String url_get_data = "get_data.php";
-        public final static String url_get_checks = "get_checks.php";
+        public final static String url_get_checks = "get_check.php";
         public final static String url_get_track = "get_track.php";
         public final static String url_get_participation = "get_participation.php";
         public final static String url_get_checkpoint = "get_checkpoint.php";
@@ -26,7 +26,7 @@ public class Config {
         public final static String url_set_user = "set_user.php";
         public final static String url_set_team = "set_team.php";
         public final static String url_set_friend = "set_friendship.php";
-        public final static String url_set_checks = "set_checks.php";
+        public final static String url_set_checks = "set_check.php";
         public final static String url_set_race = "set_race.php";
         public final static String url_set_data = "set_data.php";
         public final static String url_set_track = "set_track.php";

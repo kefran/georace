@@ -19,7 +19,7 @@ if ((isset($_POST['track'])) && (!empty($_POST['track'])))
 				t.id
 				,t.name
 			FROM 
-				Track t
+				track t
 				;");
 		$select->execute();
 
