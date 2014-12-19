@@ -10,7 +10,7 @@ public class Check implements Comparable<Check>{
     final static public String TAG_CHECK_USER ="user";
     final static public String TAG_CHECK_RACE="race";
     final static public String TAG_CHECK_CHECKPOINT="checkpoint";
-    final static public String TAG_CHECK_DATE="date";
+    final static public String TAG_CHECK_DATE="date_check";
 
 
     private User user;
