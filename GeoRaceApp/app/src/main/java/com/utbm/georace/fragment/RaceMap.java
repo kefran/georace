@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +28,10 @@ public class RaceMap extends Fragment {
     MapView mapView;
     GoogleMap map;
 
+    public RaceMap() {
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_race_map, container, false);
@@ -38,16 +43,20 @@ public class RaceMap extends Fragment {
         // Gets to GoogleMap from the MapView and does initialization stuff
         map = mapView.getMap();
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        map.setMyLocationEnabled(true);
-
+        map.setMyLocationEnabled(false);
+        map.getUiSettings().setCompassEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this.getActivity());
 
         // Updates the location and zoom of the MapView
+
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(47.7, 6.8), 10);
         map.animateCamera(cameraUpdate);
+
         return v;
     }
+
 
     @Override
     public void onResume() {
