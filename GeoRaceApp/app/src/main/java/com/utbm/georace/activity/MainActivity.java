@@ -3,6 +3,7 @@ package com.utbm.georace.activity;
 //region Imports
 import android.app.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,12 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.utbm.georace.R;
 import com.utbm.georace.adapter.ParticipationAdapter;
 import com.utbm.georace.model.Check;
 import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.User;
+import com.utbm.georace.tools.Globals;
 import com.utbm.georace.tools.WebService;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +34,7 @@ import java.util.TreeSet;
 //endregion
 
 public class MainActivity extends Activity {
+
 
     //region Variables
     private String[] mMenuList;
@@ -56,26 +60,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*
-            Renplacer ici par les données réelles
-            lastRaceListData doit être remplacé par un tableau de participation issue de
-            getMyLastParticipation
-         */
-        lastParticipationListData = getResources().getStringArray(R.array.test_course_list);
+
+        Globals g = Globals.getInstance();
+        g.setCurrentRace(null);
+
         lastParticipationList = (ListView) findViewById(R.id.listLastRace);
-
-
-          /*
-            Renplacer ici par les données réelles
-            friendsActivityListData doit être remplacé par un tableau de participation issue de
-            getFriendsLastParticipation
-         */
-        friendsParticipationListData = getResources().getStringArray(R.array.test_friends_activity);
         friendsParticipationList = (ListView) findViewById(R.id.listFriends);
-//        friendsParticipationList.setAdapter(new ParticipationAdapter(this,friendsParticipationListData));
 
-       builder = new BuildMainPageTask();
-       builder.execute();
+        builder = new BuildMainPageTask();
+        builder.execute();
     }
 
     //region action bar
@@ -110,8 +103,17 @@ public class MainActivity extends Activity {
                 startActivity(intent);
                 return true;
             case R.id.actionRace:
-                intent = new Intent(this, CourseTabActivity.class);
-                startActivity(intent);
+                Globals g = Globals.getInstance();
+
+                if (g.getCurrentRace() == null) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Vous n'avez pas lancé de course. Veuillez utiliser la recherche de courses.",
+                            Toast.LENGTH_LONG);
+                    toast.show();
+                }else{
+                    intent = new Intent(this, CourseTabActivity.class);
+                    startActivity(intent);
+                }
                 return true;
             case R.id.actionSearchRace:
                 intent = new Intent(this, SearchRaceActivity.class);

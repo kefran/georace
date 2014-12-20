@@ -11,17 +11,14 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
-    <string name="title_activity_current_race">CurrentRaceActivity</string>
-    <string name="title_activity_course_tab">courseTabActivity</string>
+    <string name="title_activity_course_tab">Course</string>
     <string name="current_race_tab_map">Carte</string>
     <string name="current_race_tab_checkpoints">Points</string>
     <string name="current_race_tab_participants">Participants</string>
-    <string name="title_activity_testmap">Map</string>
-    <string name="title_activity_testaa">Map</string>
-    <string name="title_activity_search_race">SearchRace</string>
-    <string name="title_activity_create_race">CreateRaceActivity</string>
-    <string name="title_activity_score">ScoreActivity</string>
-    <string name="title_activity_account">AccountActivity</string>
-    <string name="title_activity_create_account">CreateAccountActivity</string>
+    <string name="title_activity_search_race">Rechercher une course</string>
+    <string name="title_activity_create_race">Créer une course</string>
+    <string name="title_activity_score">Tableau des scores</string>
+    <string name="title_activity_account">Modification de votre compte</string>
+    <string name="title_activity_create_account">Créer un compte</string>
 
 </resources>

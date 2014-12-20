@@ -58,6 +58,16 @@ public class User  implements ISerializable
         this.longitude = longitude;
     }
 
+    public User(String loginName, String password, String firstName, String lastName, String email, double latitude, double longitude) {
+        this.loginName = loginName;
+        this.setPassword(password);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public User(JSONObject jsonObject) {
 
         try {

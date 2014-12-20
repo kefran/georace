@@ -669,6 +669,36 @@ public class WebService {
         return true;
 
     }
+    public boolean setRace(Race r){
+        /*
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_set_race));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+
+            param.add(new BasicNameValuePair("track","1"));
+            param.add(new BasicNameValuePair("name",c.getName()));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if(isResponseOk(httpResponse))
+            {
+                String responseString = getStringFromResponse(httpResponse);
+                Log.d("WEBSERVICE SET RACE",responseString);
+                JSONObject jso = new JSONObject(responseString);
+
+                if(jso.getString("Status").compareTo("Ok")!=0){
+                    return false;
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }*/
+        return true;
+
+    }
 
     public boolean setParticipation(Participation p){
 

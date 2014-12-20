@@ -23,12 +23,15 @@ import com.utbm.georace.fragment.CheckpointList;
 import com.utbm.georace.model.Check;
 import com.utbm.georace.model.Checkpoint;
 import com.utbm.georace.model.Participation;
+import com.utbm.georace.model.Race;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
+import com.utbm.georace.tools.Globals;
 import com.utbm.georace.tools.WebService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -40,8 +43,9 @@ public class SearchRaceActivity extends Activity {
     private ListView trackList;
     private String[] trackListData;
     private Context thisContext ;
-    private BuilTrackListsTasks builder;
-
+    private BuildTrackListsTasks builderTrackList;
+    private BuildNewRaceTasks builderRace;
+    private Race newRace = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,32 +53,45 @@ public class SearchRaceActivity extends Activity {
         thisContext = this;
         trackList = (ListView) findViewById(R.id.SearchListResults);
 
-        builder = new BuilTrackListsTasks();
-        builder.execute();
+        builderTrackList = new BuildTrackListsTasks();
+        builderTrackList.execute();
 
 
         trackList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+
+                Globals g = Globals.getInstance();
                 final String selectedTrackName = trackList.getItemAtPosition(position).toString();
                 AlertDialog.Builder builder = new AlertDialog.Builder(thisContext);
 
-                builder.setMessage("Circuit " + selectedTrackName).setTitle("Commencer la course avec ce circuit?");
-                builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                    public static final String EXTRA_MESSAGE = "";
+                if (g.getCurrentRace() != null){
+                    builder.setMessage("Une course est déjà en cours, si vous commencez une" +
+                            " nouvelles course, votre progression sera perdu!\n" +
+                            "Circuit " + selectedTrackName)
+                            .setTitle("Commencer la course avec ce circuit?");
+                }else{
+                    builder.setMessage("Circuit " + selectedTrackName).setTitle("Commencer la course avec ce circuit?");
+                }
 
+                builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Integer trackID = null;
+                        Track selectedTrack = null;
                         for(Track t : tracks){
                             if (t.getName() == selectedTrackName){
-                                trackID = t.getId();
+                                selectedTrack = t;
                             }
                         }
+                        Globals g = Globals.getInstance();
+                        newRace = new Race(new Date(),null,selectedTrack, g.getThisUser());
 
-                    Intent intent = new Intent(thisContext, CourseTabActivity.class);
-                    String message = "abc";
-                    intent.putExtra(EXTRA_MESSAGE, trackID);
-                    startActivity(intent);
+                        /*Enregistrer la nouvelle course dans la abse de données : */
+                        /*builderRace = new BuildNewRaceTasks();
+                        builderRace.execute();*/
+
+                        g.setCurrentRace(newRace);
+                        Intent intent = new Intent(thisContext, CourseTabActivity.class);
+                        startActivity(intent);
                     }
                 });
                 builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
@@ -86,7 +103,6 @@ public class SearchRaceActivity extends Activity {
                 dialog.show();
             }
         });
-
     }
 
 
@@ -149,7 +165,7 @@ public class SearchRaceActivity extends Activity {
     }
     //endregion
 
-    class BuilTrackListsTasks extends AsyncTask<Void,Void,Boolean> {
+    class BuildTrackListsTasks extends AsyncTask<Void,Void,Boolean> {
 
 
         @Override
@@ -188,5 +204,24 @@ public class SearchRaceActivity extends Activity {
             trackList.setAdapter(arrayAdapter);
         }
     }
+    class BuildNewRaceTasks extends AsyncTask<Void,Void,Boolean> {
+
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            WebService ws = WebService.getInstance();
+            ws.setRace(newRace);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            /*après l'execution du poste on devrait récupérer la race qui a été crée et remplacé la
+            * Globals Current Race par celle ci.*/
+        }
+    }
+
 
 }

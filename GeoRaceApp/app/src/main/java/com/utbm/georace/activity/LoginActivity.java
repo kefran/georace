@@ -31,6 +31,7 @@ import com.utbm.georace.model.Team;
 import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
 import com.utbm.georace.tools.Config;
+import com.utbm.georace.tools.Globals;
 import com.utbm.georace.tools.WebService;
 
 import org.apache.http.HttpEntity;
@@ -108,6 +109,14 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
         });
 
+        Button mRegisterButton = (Button) findViewById(R.id.register_button);
+        mRegisterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplication(),CreateAccountActivity.class);
+                startActivity(intent);
+            }
+        });
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         ws = WebService.getInstance();
@@ -300,7 +309,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 User user = ws.getLogin(mLogin,mPassword);
 
-                if(user!=null){Log.d("GetLogin",user.toJson().toString());}
+                if(user!=null){
+                    Log.d("GetLogin",user.toJson().toString());
+                    Globals g = Globals.getInstance();
+                    g.setThisUser(user);
+                }
                 else {Log.d("GetLogin","Failed");return false;}
 
             return true;

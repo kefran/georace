@@ -34,6 +34,12 @@ public class Race implements ISerializable, Comparable<Race>{
     }
 
 
+    public Race(Date date_start, Date date_end, Track track, User organizer){
+        this.date_start = date_start;
+        this.date_end = date_end;
+        this.track = track;
+        this.organizer = organizer;
+    }
     public Race(Integer id){
         this.id=id;
     }

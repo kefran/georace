@@ -18,6 +18,8 @@ import com.utbm.georace.R;
 import com.utbm.georace.fragment.CheckpointList;
 import com.utbm.georace.fragment.ParticipantsList;
 import com.utbm.georace.fragment.RaceMap;
+import com.utbm.georace.model.Race;
+import com.utbm.georace.tools.Globals;
 
 public class CourseTabActivity extends FragmentActivity implements
         RaceMap.OnFragmentInteractionListener,
@@ -29,6 +31,8 @@ public class CourseTabActivity extends FragmentActivity implements
     public CheckpointList fragmentCheckpointList;
     public ParticipantsList fragmentParticipantsList;
 
+
+    private Race currentRace;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +43,6 @@ public class CourseTabActivity extends FragmentActivity implements
          */
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.setDisplayOptions(0,ActionBar.DISPLAY_SHOW_TITLE);
-
         bar.addTab(bar.newTab()
                 .setText(R.string.current_race_tab_map)
                 .setTabListener(new TabListener<RaceMap>(this,"RaceMap",RaceMap.class)));
@@ -50,6 +52,12 @@ public class CourseTabActivity extends FragmentActivity implements
         bar.addTab(bar.newTab()
                 .setText(R.string.current_race_tab_participants)
                 .setTabListener(new TabListener<ParticipantsList>(this,"ParticipantsList",ParticipantsList.class)));
+
+        Globals g = Globals.getInstance();
+        currentRace = g.getCurrentRace();
+        setTitle("Course en cours : " + currentRace.getTrack().getName());
+
+
     }
 
 
@@ -67,7 +75,6 @@ public class CourseTabActivity extends FragmentActivity implements
 
     }
     //endregion
-
 
     //region action bar
 /*
