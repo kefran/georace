@@ -15,12 +15,13 @@ if ((isset($_POST['track'])) && (!empty($_POST['track'])))
 	try {
 		$pdo = PDO2::getInstance();
 		$select = $pdo->prepare("
-			SELECT 
-				t.id
-				,t.name
-			FROM 
-				track t
-				;");
+			SELECT
+				t.id,
+			    t.name
+			FROM track t
+				INNER JOIN track_checkpoint tc ON tc.track = t.id
+			GROUP BY  t.id
+			;");
 		$select->execute();
 
 			$data=$select->fetchAll(PDO::FETCH_ASSOC);

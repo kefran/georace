@@ -1,49 +1,52 @@
 package com.utbm.georace.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.utbm.georace.R;
+import com.utbm.georace.adapter.ParticipationAdapter;
+import com.utbm.georace.fragment.CheckpointList;
+import com.utbm.georace.model.Check;
+import com.utbm.georace.model.Checkpoint;
+import com.utbm.georace.model.Participation;
+import com.utbm.georace.model.Track;
+import com.utbm.georace.model.User;
+import com.utbm.georace.tools.WebService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class SearchRaceActivity extends Activity {
+
+
+    private TreeSet<Track> tracks;
+    private ListView trackList;
+    private String[] trackListData;
+    private Context thisContext ;
+    private BuilTrackListsTasks builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_race);
+        thisContext = this;
+        trackList = (ListView) findViewById(R.id.SearchListResults);
 
-
-        ListView lv = (ListView) findViewById(R.id.SearchListResults);
-
-        // Instanciating an array list (you don't need to do this,
-        // you already have yours).
-        List<String> your_array_list = new ArrayList<String>();
-        your_array_list.add("foo");
-        your_array_list.add("bar");
-
-        // This is the array adapter, it takes the context of the activity as a
-        // first parameter, the type of list view as a second parameter and your
-        // array as a third parameter.
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_list_item_1,
-                your_array_list );
-
-        lv.setAdapter(arrayAdapter);
-
-
+        builder = new BuilTrackListsTasks();
+        builder.execute();
     }
-
-
     //region action bar
 /*
         Manage the actionbar menu
@@ -101,4 +104,45 @@ public class SearchRaceActivity extends Activity {
         }
     }
     //endregion
+
+    class BuilTrackListsTasks extends AsyncTask<Void,Void,Boolean> {
+
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            WebService ws = WebService.getInstance();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            tracks = ws.getTracks();
+
+            for(Track t :tracks)
+            {
+                Log.d("SEARCH TRACK : ", t.getName());
+            }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            List<String> trackStringList = new ArrayList<String>();
+            for (Track t :tracks)
+            {
+                TreeSet<Checkpoint> checkpointsTs = t.getCheckpoints();
+                int i=0;
+                for (Checkpoint cp : checkpointsTs){
+                    i++;
+                }
+                trackStringList.add(t.getName() + " - " + i + " Checkpoints");
+            }
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                    thisContext,
+                    android.R.layout.simple_list_item_1,
+                    trackStringList );
+            trackList.setAdapter(arrayAdapter);
+        }
+    }
+
 }
