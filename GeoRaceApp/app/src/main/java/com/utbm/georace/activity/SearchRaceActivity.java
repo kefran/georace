@@ -1,7 +1,9 @@
 package com.utbm.georace.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -9,8 +11,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.utbm.georace.R;
 import com.utbm.georace.adapter.ParticipationAdapter;
@@ -46,7 +51,46 @@ public class SearchRaceActivity extends Activity {
 
         builder = new BuilTrackListsTasks();
         builder.execute();
+
+
+        trackList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                final String selectedTrackName = trackList.getItemAtPosition(position).toString();
+                AlertDialog.Builder builder = new AlertDialog.Builder(thisContext);
+
+                builder.setMessage("Circuit " + selectedTrackName).setTitle("Commencer la course avec ce circuit?");
+                builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                    public static final String EXTRA_MESSAGE = "";
+
+                    public void onClick(DialogInterface dialog, int id) {
+                        Integer trackID = null;
+                        for(Track t : tracks){
+                            if (t.getName() == selectedTrackName){
+                                trackID = t.getId();
+                            }
+                        }
+
+                    Intent intent = new Intent(thisContext, CourseTabActivity.class);
+                    String message = "abc";
+                    intent.putExtra(EXTRA_MESSAGE, trackID);
+                    startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
     }
+
+
+
     //region action bar
 /*
         Manage the actionbar menu
@@ -130,12 +174,12 @@ public class SearchRaceActivity extends Activity {
             List<String> trackStringList = new ArrayList<String>();
             for (Track t :tracks)
             {
-                TreeSet<Checkpoint> checkpointsTs = t.getCheckpoints();
+                /*TreeSet<Checkpoint> checkpointsTs = t.getCheckpoints();
                 int i=0;
                 for (Checkpoint cp : checkpointsTs){
                     i++;
-                }
-                trackStringList.add(t.getName() + " - " + i + " Checkpoints");
+                }*/
+                trackStringList.add(t.getName()/* + " - " + i + " Checkpoints"*/);
             }
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                     thisContext,
