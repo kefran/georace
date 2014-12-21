@@ -158,14 +158,16 @@ public class MainActivity extends Activity {
         participations = ws.getUserParticipation(ws.getUserLogged());
         friendsParticipations = ws.getFriendParticipation();
         friends = ws.getFriends();
-        TreeSet<Check> checks = ws.getChecks(ws.getUserLogged(),participations.first().getRace());
+        if (!participations.isEmpty())
+        {
 
-         for(Check c :checks)
-         {
-             Log.d("Main ACTIVITY CHECKS",c.getUser().getFirstName());
-         }
+            TreeSet<Check> checks = ws.getChecks(ws.getUserLogged(), participations.first().getRace());
 
-
+            for (Check c : checks)
+            {
+                Log.d("Main ACTIVITY CHECKS", c.getUser().getFirstName());
+            }
+        }
          for(User u : friends){
              Log.d("MAIN COPAIN",u.getFirstName());
          }

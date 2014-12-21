@@ -68,10 +68,10 @@ public class User  implements ISerializable
         this.longitude = longitude;
     }
 
-    /* Utilisation de ce constructeur car j'ai pas encore implémenté la recupération de la position par défaut de l'utilisateur*/
+    /* Utilisation de ce constructeur car j'ai pas encore implémenté la recupération de la position par défaut de l'utilisateur et la fonction sha1 de jo est nimp*/
     public User(String loginName, String password, String firstName, String lastName, String email) {
         this.loginName = loginName;
-        this.setPassword(password);
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

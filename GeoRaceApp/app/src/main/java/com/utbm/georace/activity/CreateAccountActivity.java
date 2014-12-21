@@ -1,6 +1,8 @@
 package com.utbm.georace.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -13,8 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.utbm.georace.R;
+import com.utbm.georace.model.Race;
+import com.utbm.georace.model.Track;
 import com.utbm.georace.model.User;
+import com.utbm.georace.tools.Globals;
 import com.utbm.georace.tools.WebService;
+
+import java.util.Date;
 
 public class CreateAccountActivity extends Activity {
     User newUser;
@@ -64,6 +71,11 @@ public class CreateAccountActivity extends Activity {
                             newUser = new User(userLogin,userPassword1,userFirstName,userLastName,userEmail);
                             newUserBuilder = new BuildNewUserTasks();
                             newUserBuilder.execute();
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "Votre compte a bien été créé",
+                                    Toast.LENGTH_LONG);
+                            toast.show();
+                            finish();
                         }
                     }
                 }

@@ -34,8 +34,9 @@ if ((isset($_POST['user_login'])) && (!empty($_POST['user_login'])) &&
 				:user_latitude,
 				:user_longitude);
 				");
+			$password = sha1($_POST['user_password']);
 			$insert->bindParam(':user_login',$_POST['user_login']);
-			$insert->bindParam(':user_password',$_POST['user_password']);
+			$insert->bindParam(':user_password',$password;
 			$insert->bindParam(':user_firstname',$_POST['user_firstname']);
 			$insert->bindParam(':user_lastname',$_POST['user_lastname']);
 			$insert->bindParam(':user_email',$_POST['user_email']);
