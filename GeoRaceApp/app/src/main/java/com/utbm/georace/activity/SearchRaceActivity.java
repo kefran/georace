@@ -89,6 +89,9 @@ public class SearchRaceActivity extends Activity {
                         /*builderRace = new BuildNewRaceTasks();
                         builderRace.execute();*/
 
+                        /*Création de la participation de l'utilisateur à la nouvelle course*/
+                        Participation newParticipation = new Participation(g.getThisUser(),newRace,new Date());
+                        g.setCurrentParticipation(newParticipation);
                         g.setCurrentRace(newRace);
                         Intent intent = new Intent(thisContext, CourseTabActivity.class);
                         startActivity(intent);

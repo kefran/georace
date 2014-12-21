@@ -4,6 +4,7 @@ import com.utbm.georace.tools.ISerializable;
 
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -32,6 +33,14 @@ public class Participation implements ISerializable, Comparable<Participation> {
         this.end = end;
         this.start = start;
         this.finished=finished;
+    }
+
+    public Participation(User user, Race race, Date start) {
+        this.user = user;
+        this.race = race;
+        this.end = null;
+        this.start = start;
+        this.finished=0;
     }
 
     public Participation(User user){

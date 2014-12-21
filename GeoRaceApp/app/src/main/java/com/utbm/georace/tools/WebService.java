@@ -356,8 +356,8 @@ public class WebService {
                     buf= new Checkpoint(
                             jbuf.getInt(Checkpoint.TAG_CHECKPOINT_ID)
                             ,jbuf.getString(Checkpoint.TAG_CHECKPOINT_NAME)
-                            ,jbuf.getLong(Checkpoint.TAG_CHECKPOINT_LATITUDE)
-                            ,jbuf.getLong(Checkpoint.TAG_CHECKPOINT_LONGITUDE)
+                            ,jbuf.getDouble(Checkpoint.TAG_CHECKPOINT_LATITUDE)
+                            ,jbuf.getDouble(Checkpoint.TAG_CHECKPOINT_LONGITUDE)
                             ,getUser(jbuf.getInt(Track.TAG_TRACK_CREATOR))
                     );
                     cpList.add(buf);

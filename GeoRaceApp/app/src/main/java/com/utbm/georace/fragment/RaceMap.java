@@ -11,6 +11,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.location.LocationRequest;
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.utbm.georace.R;
 
 public class RaceMap extends Fragment {
@@ -35,28 +37,31 @@ public class RaceMap extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_race_map, container, false);
-
-        // Gets the MapView from the XML layout and creates it
         mapView = (MapView) v.findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
-
-        // Gets to GoogleMap from the MapView and does initialization stuff
         map = mapView.getMap();
-        map.getUiSettings().setMyLocationButtonEnabled(false);
-        map.setMyLocationEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
+        map.setMyLocationEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
-        // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this.getActivity());
-
-        // Updates the location and zoom of the MapView
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(47.7, 6.8), 10);
-        map.animateCamera(cameraUpdate);
-
         return v;
     }
 
+    public void setCheckpointsCompteur(Integer nbCheckpoints, Integer nbChecked){
+        TextView tv = (TextView) getView().findViewById(R.id.nbCheckpointsValue);
+        tv.setText(nbChecked+"/"+nbCheckpoints);
+    }
+    public void setMarker(LatLng position, String tooltip){
+        map.addMarker(new MarkerOptions()
+                .position(position)
+                .title(tooltip));
+    }
+    public void setCameraTo(LatLng position){
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, 18);
+        map.animateCamera(cameraUpdate);
+
+    }
 
     @Override
     public void onResume() {
@@ -76,14 +81,11 @@ public class RaceMap extends Fragment {
         mapView.onLowMemory();
     }
 
-
-
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction(Uri uri);
 
         public void setUserPosition();
     }
-
 
     @Override
     public void onAttach(Activity activity) {

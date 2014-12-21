@@ -11,15 +11,36 @@
         android:text="Carte de la course"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_margin="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
         android:textAppearance="@android:style/TextAppearance.Large"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nbCheckpointsLib"
+        android:text="Nombre de checkpoints passé : "
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@id/mapsTitle"
+
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nbCheckpointsValue"
+        android:text="1/2"
+        android:layout_toRightOf="@id/nbCheckpointsLib"
+        android:layout_alignBaseline="@id/nbCheckpointsLib"
+
+        android:textAppearance="@android:style/TextAppearance.Medium"
         />
         <com.google.android.gms.maps.MapView android:id="@+id/mapview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_below="@id/mapsTitle"
+            android:layout_below="@id/nbCheckpointsLib"
             android:layout_margin="8dp"
             android:background="#2c62ff62" />`
         </RelativeLayout>

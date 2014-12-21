@@ -6,6 +6,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -14,12 +17,22 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
 import com.utbm.georace.R;
 import com.utbm.georace.fragment.CheckpointList;
 import com.utbm.georace.fragment.ParticipantsList;
 import com.utbm.georace.fragment.RaceMap;
+import com.utbm.georace.model.Check;
+import com.utbm.georace.model.Checkpoint;
+import com.utbm.georace.model.Participation;
 import com.utbm.georace.model.Race;
+import com.utbm.georace.model.Track;
 import com.utbm.georace.tools.Globals;
+import com.utbm.georace.tools.WebService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
 public class CourseTabActivity extends FragmentActivity implements
         RaceMap.OnFragmentInteractionListener,
@@ -27,12 +40,19 @@ public class CourseTabActivity extends FragmentActivity implements
         ParticipantsList.OnFragmentInteractionListener {
 
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+
     public  RaceMap fragmentRaceMap;
     public CheckpointList fragmentCheckpointList;
     public ParticipantsList fragmentParticipantsList;
 
+    private final String CARTE_TAG = "MAP";
+    private final String CHECKPOINTS_TAG = "CHECKPOINTS_TAG";
+    private final String PARTICIPANT_TAG = "PARTICIPANT_TAG";
 
+    private Participation currentParticipation;
     private Race currentRace;
+    private TreeSet<Check> currentChecks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,34 +65,73 @@ public class CourseTabActivity extends FragmentActivity implements
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.addTab(bar.newTab()
                 .setText(R.string.current_race_tab_map)
-                .setTabListener(new TabListener<RaceMap>(this,"RaceMap",RaceMap.class)));
+                .setTabListener(new TabListener<RaceMap>(this, CARTE_TAG, RaceMap.class)));
         bar.addTab(bar.newTab()
                 .setText(R.string.current_race_tab_checkpoints)
-                .setTabListener(new TabListener<CheckpointList>(this,"CheckpointList",CheckpointList.class)));
+                .setTabListener(new TabListener<CheckpointList>(this,CHECKPOINTS_TAG,CheckpointList.class)));
         bar.addTab(bar.newTab()
                 .setText(R.string.current_race_tab_participants)
-                .setTabListener(new TabListener<ParticipantsList>(this,"ParticipantsList",ParticipantsList.class)));
+                .setTabListener(new TabListener<ParticipantsList>(this,PARTICIPANT_TAG,ParticipantsList.class)));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        final ActionBar bar = getActionBar();
+        fragmentRaceMap = (RaceMap) getFragmentManager().findFragmentByTag(CARTE_TAG);
+        fragmentCheckpointList = (CheckpointList) getFragmentManager().findFragmentByTag(CHECKPOINTS_TAG);
+        fragmentParticipantsList = (ParticipantsList) getFragmentManager().findFragmentByTag(PARTICIPANT_TAG);
 
         Globals g = Globals.getInstance();
         currentRace = g.getCurrentRace();
+        WebService ws = WebService.getInstance();
+        currentChecks = new TreeSet<Check>();
+
         setTitle("Course en cours : " + currentRace.getTrack().getName());
 
-
+        setCheckPointCompteur();
+        setMapChekpoints();
+        setUserPosition();
+        //setCheckpointlist();
     }
 
+    //region checkpointlist
+        public void setCheckpointlist(){
+            List<String> checkpointList = new ArrayList<String>();
+            TreeSet<Checkpoint> cps = currentRace.getTrack().getCheckpoints();
+            for(Checkpoint cp : cps){
+                checkpointList.add("Checkpoint : " + cp.getName());
+            }
+            fragmentCheckpointList.setChekpointList(checkpointList);
+        }
+    //endregion
 
-    public void test() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentRaceMap = (RaceMap) fragmentManager.findFragmentByTag("RaceMap");
-
-
-    }
     //region racemap
     @Override
     public void setUserPosition(){
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = service.getBestProvider(criteria, false);
+        Location location = service.getLastKnownLocation(provider);
+        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        fragmentRaceMap.setCameraTo(userLocation);
 
+    }
+
+    public void setMapChekpoints() {
+        TreeSet<Checkpoint> cps = currentRace.getTrack().getCheckpoints();
+        for(Checkpoint cp : cps){
+            fragmentRaceMap.setMarker(new LatLng(cp.getLatitude(),cp.getLongitude()),cp.getName());
+        }
+    }
+
+    public void setCheckPointCompteur(){
+        Integer i = 0;
+        for(Check c : currentChecks){
+            i++;
+        }
+        fragmentRaceMap.setCheckpointsCompteur(currentRace.getTrack().getCheckpoints().size(),i);
     }
     //endregion
 
@@ -154,6 +213,8 @@ public class CourseTabActivity extends FragmentActivity implements
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+
 
     //endregion
 

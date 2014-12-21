@@ -75,6 +75,7 @@ public class CreateAccountActivity extends Activity {
                                     "Votre compte a bien été créé",
                                     Toast.LENGTH_LONG);
                             toast.show();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
                             finish();
                         }
                     }
