@@ -68,6 +68,17 @@ public class User  implements ISerializable
         this.longitude = longitude;
     }
 
+    /* Utilisation de ce constructeur car j'ai pas encore implémenté la recupération de la position par défaut de l'utilisateur*/
+    public User(String loginName, String password, String firstName, String lastName, String email) {
+        this.loginName = loginName;
+        this.setPassword(password);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.latitude = 1.123;
+        this.longitude = 1.123;
+    }
+
     public User(JSONObject jsonObject) {
 
         try {

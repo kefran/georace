@@ -669,6 +669,43 @@ public class WebService {
         return true;
 
     }
+
+    public boolean setUser(User u){
+
+        try
+        {
+            httpPost.setURI(new URI(Config.Service.service_set_user));
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            param.add(new BasicNameValuePair("user_login",u.getLoginName()));
+            param.add(new BasicNameValuePair("user_password",u.getPassword()));
+            param.add(new BasicNameValuePair("user_firstname",u.getFirstName()));
+            param.add(new BasicNameValuePair("user_lastname",u.getLastName()));
+            param.add(new BasicNameValuePair("user_email",u.getEmail()));
+            param.add(new BasicNameValuePair("user_latitude","1.123"));
+            param.add(new BasicNameValuePair("user_longitude","1.123"));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(param));//Bind parameter to the query
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            if(isResponseOk(httpResponse))
+            {
+                String responseString = getStringFromResponse(httpResponse);
+                Log.d("WEBSERVICE SET USER",responseString);
+                JSONObject jso = new JSONObject(responseString);
+
+                if(jso.getString("Status").compareTo("Ok")!=0){
+                    return false;
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return true;
+
+    }
+
+
     public boolean setRace(Race r){
         /*
         try
